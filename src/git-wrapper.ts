@@ -522,7 +522,7 @@ export class SacredTimeline {
         stats: {
             totalCaptures: number;
             activeDays: number;
-            topFiles: { file: string; changes: number }[];
+            topFiles: { file: string; path: string; changes: number }[];
             experiments: { started: number; kept: number; discarded: number };
             busiestDay: { day: string; captures: number } | null;
         };
@@ -579,11 +579,16 @@ export class SacredTimeline {
                 }
             }
 
-            // Get top 5 most changed files
+            // Get top 5 most changed files (filter out system files)
             const topFiles = Object.entries(fileChanges)
+                .filter(([file]) => !file.includes('.DS_Store') && !file.startsWith('.'))
                 .sort((a, b) => b[1] - a[1])
                 .slice(0, 5)
-                .map(([file, changes]) => ({ file: file.split('/').pop() || file, changes }));
+                .map(([file, changes]) => ({
+                    file: file.split('/').pop() || file,
+                    path: file,
+                    changes
+                }));
 
             // Count active days
             const uniqueDates = new Set(commits.map(c => new Date(c.date).toDateString()));

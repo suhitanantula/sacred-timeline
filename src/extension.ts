@@ -445,6 +445,7 @@ async function narrateCommand() {
                 details += `\n## Most Active Files\n`;
                 stats.topFiles.forEach((f, i) => {
                     details += `${i + 1}. **${f.file}** - ${f.changes} change${f.changes !== 1 ? 's' : ''}\n`;
+                    details += `   \`${f.path}\`\n\n`;
                 });
             }
 
