@@ -396,7 +396,7 @@ async function connectCommand() {
     // Step 2: Get token
     const needsToken = await vscode.window.showInformationMessage(
         'Step 2: Create a Personal Access Token',
-        { modal: true, detail: 'A token lets Sacred Timeline access your repository securely.\n\n✓ Check the "repo" scope\n✓ Set expiration (90 days recommended)\n✓ Copy the token - you won\'t see it again!' },
+        { modal: true, detail: 'A token lets Sacred Timeline access your repository securely.\n\n✓ Check the "repo" scope\n✓ Set expiration (90 days recommended)\n✓ Copy the token - you won\'t see it again!\n\n🔒 Security: Your token will be stored in .git/config (local only, not synced).' },
         'Create Token',
         'I have a token'
     );
