@@ -1,0 +1,176 @@
+{
+  "name": "sacred-timeline",
+  "displayName": "Sacred Timeline",
+  "description": "Git for humans: Innovation architecture for the AI age",
+  "version": "0.1.0",
+  "publisher": "helix-mind",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other",
+    "SCM Providers"
+  ],
+  "keywords": [
+    "git",
+    "version control",
+    "innovation",
+    "non-coders",
+    "knowledge work",
+    "AI workflow"
+  ],
+  "activationEvents": [
+    "workspaceContains:.git",
+    "onCommand:sacredTimeline.checkpoint",
+    "onCommand:sacredTimeline.update",
+    "onCommand:sacredTimeline.backup",
+    "onCommand:sacredTimeline.changes",
+    "onCommand:sacredTimeline.timeline"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "sacredTimeline.checkpoint",
+        "title": "Checkpoint: Save this moment",
+        "category": "Sacred Timeline",
+        "icon": "$(save)"
+      },
+      {
+        "command": "sacredTimeline.update",
+        "title": "Update: Get latest from cloud",
+        "category": "Sacred Timeline",
+        "icon": "$(cloud-download)"
+      },
+      {
+        "command": "sacredTimeline.backup",
+        "title": "Backup: Send to cloud",
+        "category": "Sacred Timeline",
+        "icon": "$(cloud-upload)"
+      },
+      {
+        "command": "sacredTimeline.changes",
+        "title": "Changes: What did I change?",
+        "category": "Sacred Timeline",
+        "icon": "$(diff)"
+      },
+      {
+        "command": "sacredTimeline.timeline",
+        "title": "Timeline: Show me history",
+        "category": "Sacred Timeline",
+        "icon": "$(history)"
+      },
+      {
+        "command": "sacredTimeline.experiment",
+        "title": "Experiment: Try something risky",
+        "category": "Sacred Timeline",
+        "icon": "$(beaker)"
+      },
+      {
+        "command": "sacredTimeline.keep",
+        "title": "Keep: Keep the experiment",
+        "category": "Sacred Timeline",
+        "icon": "$(check)"
+      },
+      {
+        "command": "sacredTimeline.discard",
+        "title": "Discard: Abandon experiment",
+        "category": "Sacred Timeline",
+        "icon": "$(trash)"
+      },
+      {
+        "command": "sacredTimeline.restore",
+        "title": "Restore: Go back to earlier",
+        "category": "Sacred Timeline",
+        "icon": "$(discard)"
+      },
+      {
+        "command": "sacredTimeline.start",
+        "title": "Start: Begin fresh project",
+        "category": "Sacred Timeline",
+        "icon": "$(rocket)"
+      },
+      {
+        "command": "sacredTimeline.connect",
+        "title": "Connect: Link to cloud",
+        "category": "Sacred Timeline",
+        "icon": "$(plug)"
+      },
+      {
+        "command": "sacredTimeline.untangle",
+        "title": "Untangle: Fix conflicts",
+        "category": "Sacred Timeline",
+        "icon": "$(git-merge)"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "sacred-timeline",
+          "title": "Sacred Timeline",
+          "icon": "$(git-branch)"
+        }
+      ]
+    },
+    "views": {
+      "sacred-timeline": [
+        {
+          "type": "webview",
+          "id": "sacredTimeline.mainView",
+          "name": "Sacred Timeline"
+        }
+      ]
+    },
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "sacredTimeline.checkpoint",
+          "when": "workspaceFolderCount > 0"
+        },
+        {
+          "command": "sacredTimeline.update",
+          "when": "workspaceFolderCount > 0"
+        },
+        {
+          "command": "sacredTimeline.backup",
+          "when": "workspaceFolderCount > 0"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "sacredTimeline.checkpoint",
+        "key": "ctrl+shift+s",
+        "mac": "cmd+shift+s",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "sacredTimeline.update",
+        "key": "ctrl+shift+u",
+        "mac": "cmd+shift+u"
+      },
+      {
+        "command": "sacredTimeline.backup",
+        "key": "ctrl+shift+b",
+        "mac": "cmd+shift+b"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "lint": "eslint src --ext ts"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@types/vscode": "^1.85.0",
+    "@typescript-eslint/eslint-plugin": "^6.13.0",
+    "@typescript-eslint/parser": "^6.13.0",
+    "eslint": "^8.54.0",
+    "typescript": "^5.3.0"
+  },
+  "dependencies": {
+    "simple-git": "^3.21.0"
+  }
+}
