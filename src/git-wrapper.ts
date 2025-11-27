@@ -18,7 +18,6 @@
  *   untangle    → merge conflict resolution helper
  */
 
-import * as vscode from 'vscode';
 import simpleGit, { SimpleGit, StatusResult, LogResult, DiffResult } from 'simple-git';
 import * as path from 'path';
 

@@ -28,6 +28,9 @@
     "onCommand:sacredTimeline.timeline"
   ],
   "main": "./out/extension.js",
+  "bin": {
+    "sacred": "./out/cli.js"
+  },
   "contributes": {
     "commands": [
       {
