@@ -53,6 +53,12 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
                 case 'experiment':
                     vscode.commands.executeCommand('sacredTimeline.experiment');
                     break;
+                case 'connect':
+                    vscode.commands.executeCommand('sacredTimeline.connect');
+                    break;
+                case 'start':
+                    vscode.commands.executeCommand('sacredTimeline.start');
+                    break;
                 case 'refresh':
                     this._updateView();
                     break;
@@ -69,12 +75,14 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
         const status = await this._sacredTimeline.getStatusSummary();
         const changes = await this._sacredTimeline.changes();
         const timeline = await this._sacredTimeline.timeline(5);
+        const isConnected = await this._sacredTimeline.isConnected();
 
         this._view.webview.postMessage({
             type: 'update',
             status,
             changes,
-            timeline
+            timeline,
+            isConnected
         });
     }
 
@@ -362,6 +370,20 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
         </div>
     </div>
 
+    <div class="section" id="setupSection">
+        <div class="section-title">Setup</div>
+        <div class="button-grid">
+            <button onclick="sendMessage('start')" id="startBtn">
+                <span class="icon">🚀</span>
+                Start
+            </button>
+            <button onclick="sendMessage('connect')" id="connectBtn">
+                <span class="icon">🔗</span>
+                Connect
+            </button>
+        </div>
+    </div>
+
     <div class="keyboard-hint">
         <kbd>Cmd+Shift+S</kbd> Capture &nbsp;
         <kbd>Cmd+Shift+U</kbd> Update &nbsp;
@@ -385,7 +407,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
         });
 
         function updateUI(data) {
-            const { status, changes, timeline } = data;
+            const { status, changes, timeline, isConnected } = data;
 
             // Update status badge
             const badge = document.getElementById('statusBadge');
@@ -447,6 +469,26 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
                 timelineList.innerHTML = html;
             } else {
                 timelineList.innerHTML = '<div class="empty-state">No captures yet. Create your first!</div>';
+            }
+
+            // Update setup section visibility
+            const setupSection = document.getElementById('setupSection');
+            const startBtn = document.getElementById('startBtn');
+            const connectBtn = document.getElementById('connectBtn');
+
+            if (status.isRepo && isConnected) {
+                // Fully set up, hide setup section
+                setupSection.style.display = 'none';
+            } else {
+                setupSection.style.display = 'block';
+                // Show relevant button based on state
+                if (!status.isRepo) {
+                    startBtn.style.display = 'flex';
+                    connectBtn.style.display = 'none';
+                } else if (!isConnected) {
+                    startBtn.style.display = 'none';
+                    connectBtn.style.display = 'flex';
+                }
             }
         }
 

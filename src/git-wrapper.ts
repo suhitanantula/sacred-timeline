@@ -441,6 +441,15 @@ export class SacredTimeline {
      */
     async connect(url: string): Promise<{ success: boolean; message: string }> {
         try {
+            // Check if origin already exists
+            const remotes = await this.git.getRemotes();
+            const hasOrigin = remotes.some(r => r.name === 'origin');
+
+            if (hasOrigin) {
+                // Update existing remote
+                await this.git.removeRemote('origin');
+            }
+
             await this.git.addRemote('origin', url);
 
             return {
@@ -450,17 +459,58 @@ export class SacredTimeline {
         } catch (error) {
             const errorMsg = error instanceof Error ? error.message : 'Unknown error';
 
-            if (errorMsg.includes('already exists')) {
-                return {
-                    success: false,
-                    message: 'Already connected to cloud.'
-                };
-            }
-
             return {
                 success: false,
                 message: `Could not connect: ${errorMsg}`
             };
+        }
+    }
+
+    /**
+     * Configure git credentials for HTTPS authentication
+     * Embeds token in the remote URL for password-less push/pull
+     */
+    async configureCredentials(username: string, token: string): Promise<{ success: boolean; message: string }> {
+        try {
+            // Configure credential helper to store
+            await this.git.addConfig('credential.helper', 'store');
+
+            // Set the username for commits
+            await this.git.addConfig('user.name', username);
+
+            // Get current remote URL and update with embedded token
+            const remotes = await this.git.getRemotes(true);
+            const origin = remotes.find(r => r.name === 'origin');
+
+            if (origin && origin.refs.push) {
+                const url = origin.refs.push;
+                // Convert https://github.com/user/repo.git to https://user:token@github.com/user/repo.git
+                const authedUrl = url.replace('https://github.com/', `https://${username}:${token}@github.com/`);
+                await this.git.removeRemote('origin');
+                await this.git.addRemote('origin', authedUrl);
+            }
+
+            return {
+                success: true,
+                message: 'Credentials configured.'
+            };
+        } catch (error) {
+            return {
+                success: false,
+                message: `Could not configure credentials: ${error instanceof Error ? error.message : 'Unknown error'}`
+            };
+        }
+    }
+
+    /**
+     * Check if connected to a remote
+     */
+    async isConnected(): Promise<boolean> {
+        try {
+            const remotes = await this.git.getRemotes();
+            return remotes.length > 0;
+        } catch {
+            return false;
         }
     }
 

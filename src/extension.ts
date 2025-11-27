@@ -358,16 +358,88 @@ async function startCommand() {
     updateStatusBar();
 }
 
-// CONNECT: Link to cloud
+// CONNECT: Link to cloud with guided GitHub setup
 async function connectCommand() {
     if (!sacredTimeline) {
         vscode.window.showErrorMessage('No workspace open');
         return;
     }
 
+    // Check if already a repo
+    const isRepo = await sacredTimeline.isRepository();
+    if (!isRepo) {
+        vscode.window.showWarningMessage('No timeline yet. Run "Start" first to initialize.');
+        return;
+    }
+
+    // Step 1: Create repo instruction
+    const createRepo = await vscode.window.showInformationMessage(
+        'Step 1: Create a GitHub repository for your project',
+        { modal: true, detail: 'You\'ll need a GitHub repository to backup your work to the cloud.' },
+        'Open GitHub',
+        'I already have one'
+    );
+
+    if (!createRepo) return;
+
+    if (createRepo === 'Open GitHub') {
+        vscode.env.openExternal(vscode.Uri.parse('https://github.com/new'));
+        // Wait for user to create repo
+        const proceed = await vscode.window.showInformationMessage(
+            'After creating the repository, click Continue',
+            'Continue',
+            'Cancel'
+        );
+        if (proceed !== 'Continue') return;
+    }
+
+    // Step 2: Get token
+    const needsToken = await vscode.window.showInformationMessage(
+        'Step 2: Create a Personal Access Token',
+        { modal: true, detail: 'A token lets Sacred Timeline access your repository securely.\n\n✓ Check the "repo" scope\n✓ Set expiration (90 days recommended)\n✓ Copy the token - you won\'t see it again!' },
+        'Create Token',
+        'I have a token'
+    );
+
+    if (!needsToken) return;
+
+    if (needsToken === 'Create Token') {
+        vscode.env.openExternal(vscode.Uri.parse('https://github.com/settings/tokens/new?description=Sacred%20Timeline&scopes=repo'));
+    }
+
+    // Step 3: Get username
+    const username = await vscode.window.showInputBox({
+        prompt: 'Enter your GitHub username',
+        placeHolder: 'your-username',
+        validateInput: (text) => {
+            if (!text || text.trim().length === 0) {
+                return 'Please enter your GitHub username';
+            }
+            return null;
+        }
+    });
+
+    if (!username) return;
+
+    // Step 4: Get token
+    const token = await vscode.window.showInputBox({
+        prompt: 'Enter your Personal Access Token',
+        placeHolder: 'ghp_xxxxxxxxxxxx',
+        password: true,
+        validateInput: (text) => {
+            if (!text || text.trim().length === 0) {
+                return 'Please enter your Personal Access Token';
+            }
+            return null;
+        }
+    });
+
+    if (!token) return;
+
+    // Step 5: Get repository URL
     const url = await vscode.window.showInputBox({
         prompt: 'Enter your GitHub repository URL',
-        placeHolder: 'https://github.com/username/repository.git',
+        placeHolder: `https://github.com/${username}/my-project.git`,
         validateInput: (text) => {
             if (!text || !text.includes('github.com')) {
                 return 'Please enter a valid GitHub URL';
@@ -378,12 +450,20 @@ async function connectCommand() {
 
     if (!url) return;
 
-    const result = await sacredTimeline.connect(url);
+    // Connect and configure credentials
+    const connectResult = await sacredTimeline.connect(url);
 
-    if (result.success) {
-        vscode.window.showInformationMessage(`$(plug) ${result.message}`);
+    if (!connectResult.success) {
+        vscode.window.showErrorMessage(connectResult.message);
+        return;
+    }
+
+    const credResult = await sacredTimeline.configureCredentials(username, token);
+
+    if (credResult.success) {
+        vscode.window.showInformationMessage('$(plug) Connected to GitHub! You can now backup and update.');
     } else {
-        vscode.window.showWarningMessage(result.message);
+        vscode.window.showWarningMessage(credResult.message);
     }
 
     updateStatusBar();
