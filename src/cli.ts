@@ -34,6 +34,7 @@ ${color.dim('Commands:')}
   ${color.green('start')}                Begin fresh project (git init)
   ${color.green('connect')} <url>        Link to cloud (add remote)
   ${color.green('status')}               Show current state
+  ${color.green('init-shell')}           Setup auto-status on cd (add to .zshrc)
 
 ${color.dim('Examples:')}
   sacred capture "finished draft of chapter 3"
@@ -267,6 +268,72 @@ async function main() {
                     console.log(color.red('⚠ ') + 'Has conflicts - needs untangling');
                 }
                 console.log();
+                break;
+            }
+
+            case 'init-shell': {
+                const shellHook = `
+# Sacred Timeline - auto-status on cd
+# Add this to your ~/.zshrc or ~/.bashrc
+
+sacred_auto_status() {
+    if [ -d ".git" ]; then
+        sacred status-line 2>/dev/null
+    fi
+}
+
+# Override cd to show status when entering git repos
+cd() {
+    builtin cd "$@" && sacred_auto_status
+}
+
+# Show status on new terminal if already in a git repo
+sacred_auto_status
+`;
+                console.log(color.bold('\nSacred Timeline Shell Integration\n'));
+                console.log(color.dim('Add this to your ~/.zshrc (or ~/.bashrc):'));
+                console.log(color.dim('─'.repeat(50)));
+                console.log(shellHook);
+                console.log(color.dim('─'.repeat(50)));
+                console.log(color.dim('\nQuick setup:'));
+                console.log(color.green('  sacred init-shell >> ~/.zshrc && source ~/.zshrc'));
+                console.log();
+                break;
+            }
+
+            case 'status-line': {
+                // One-line status for shell integration (silent if not a repo)
+                const status = await sacred.getStatusSummary();
+                const changes = await sacred.changes();
+
+                const parts: string[] = [];
+
+                if (status.currentExperiment) {
+                    parts.push(color.yellow(`🧪 ${status.currentExperiment}`));
+                }
+
+                if (changes.hasChanges) {
+                    const total = changes.staged.length + changes.unstaged.length + changes.untracked.length;
+                    parts.push(color.yellow(`${total} changes`));
+                }
+
+                if (status.aheadOfCloud > 0) {
+                    parts.push(color.blue(`↑${status.aheadOfCloud} to backup`));
+                }
+
+                if (status.behindCloud > 0) {
+                    parts.push(color.blue(`↓${status.behindCloud} to update`));
+                }
+
+                if (status.hasConflicts) {
+                    parts.push(color.red('⚠ conflicts'));
+                }
+
+                if (parts.length > 0) {
+                    console.log(color.dim('📸 ') + parts.join(color.dim(' · ')));
+                } else if (!changes.hasChanges && status.aheadOfCloud === 0) {
+                    console.log(color.dim('📸 ') + color.green('✓ all synced'));
+                }
                 break;
             }
 
