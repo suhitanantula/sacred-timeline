@@ -21,7 +21,7 @@
   ],
   "activationEvents": [
     "workspaceContains:.git",
-    "onCommand:sacredTimeline.checkpoint",
+    "onCommand:sacredTimeline.capture",
     "onCommand:sacredTimeline.update",
     "onCommand:sacredTimeline.backup",
     "onCommand:sacredTimeline.changes",
@@ -31,10 +31,16 @@
   "contributes": {
     "commands": [
       {
-        "command": "sacredTimeline.checkpoint",
-        "title": "Checkpoint: Save this moment",
+        "command": "sacredTimeline.capture",
+        "title": "Capture: Save this moment",
         "category": "Sacred Timeline",
         "icon": "$(save)"
+      },
+      {
+        "command": "sacredTimeline.narrate",
+        "title": "Narrate: Summarize my progress",
+        "category": "Sacred Timeline",
+        "icon": "$(book)"
       },
       {
         "command": "sacredTimeline.update",
@@ -124,7 +130,7 @@
     "menus": {
       "commandPalette": [
         {
-          "command": "sacredTimeline.checkpoint",
+          "command": "sacredTimeline.capture",
           "when": "workspaceFolderCount > 0"
         },
         {
@@ -139,7 +145,7 @@
     },
     "keybindings": [
       {
-        "command": "sacredTimeline.checkpoint",
+        "command": "sacredTimeline.capture",
         "key": "ctrl+shift+s",
         "mac": "cmd+shift+s",
         "when": "editorTextFocus"

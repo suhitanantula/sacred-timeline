@@ -32,8 +32,8 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
         // Handle messages from the webview
         webviewView.webview.onDidReceiveMessage(async (data) => {
             switch (data.type) {
-                case 'checkpoint':
-                    vscode.commands.executeCommand('sacredTimeline.checkpoint');
+                case 'capture':
+                    vscode.commands.executeCommand('sacredTimeline.capture');
                     break;
                 case 'update':
                     vscode.commands.executeCommand('sacredTimeline.update');
@@ -46,6 +46,9 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
                     break;
                 case 'timeline':
                     vscode.commands.executeCommand('sacredTimeline.timeline');
+                    break;
+                case 'narrate':
+                    vscode.commands.executeCommand('sacredTimeline.narrate');
                     break;
                 case 'experiment':
                     vscode.commands.executeCommand('sacredTimeline.experiment');
@@ -216,25 +219,51 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
             background: var(--vscode-editor-background);
             border-radius: 4px;
             padding: 8px;
+            position: relative;
         }
 
         .timeline-item {
-            padding: 8px 0;
-            border-bottom: 1px solid var(--vscode-widget-border);
+            padding: 8px 0 8px 20px;
+            border-left: 2px solid var(--vscode-widget-border);
+            margin-left: 6px;
+            position: relative;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -6px;
+            top: 12px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--vscode-button-background);
+            border: 2px solid var(--vscode-editor-background);
         }
 
         .timeline-item:last-child {
-            border-bottom: none;
+            border-left-color: transparent;
+        }
+
+        .timeline-item:first-child::before {
+            background: var(--vscode-gitDecoration-addedResourceForeground);
         }
 
         .timeline-message {
             font-size: 12px;
             margin-bottom: 4px;
+            line-height: 1.4;
         }
 
         .timeline-meta {
             font-size: 10px;
             color: var(--vscode-descriptionForeground);
+            display: flex;
+            gap: 8px;
+        }
+
+        .timeline-meta .author {
+            opacity: 0.8;
         }
 
         .empty-state {
@@ -286,9 +315,9 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
     <div class="section">
         <div class="section-title">Quick Actions</div>
         <div class="button-grid">
-            <button class="primary" onclick="sendMessage('checkpoint')">
-                <span class="icon">💾</span>
-                Checkpoint
+            <button class="primary" onclick="sendMessage('capture')">
+                <span class="icon">📸</span>
+                Capture
             </button>
             <button onclick="sendMessage('update')">
                 <span class="icon">⬇️</span>
@@ -309,11 +338,18 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
     <div class="section">
         <div class="section-title">Recent Timeline</div>
         <div class="timeline-list" id="timelineList">
-            <div class="empty-state">No checkpoints yet</div>
+            <div class="empty-state">No captures yet</div>
         </div>
-        <button style="width: 100%; margin-top: 8px;" onclick="sendMessage('timeline')">
-            View Full Timeline
-        </button>
+        <div class="button-grid" style="margin-top: 8px;">
+            <button onclick="sendMessage('timeline')">
+                <span class="icon">📜</span>
+                Full Timeline
+            </button>
+            <button onclick="sendMessage('narrate')">
+                <span class="icon">📖</span>
+                Narrate
+            </button>
+        </div>
     </div>
 
     <div class="section">
@@ -327,7 +363,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
     </div>
 
     <div class="keyboard-hint">
-        <kbd>Cmd+Shift+S</kbd> Checkpoint &nbsp;
+        <kbd>Cmd+Shift+S</kbd> Capture &nbsp;
         <kbd>Cmd+Shift+U</kbd> Update &nbsp;
         <kbd>Cmd+Shift+B</kbd> Backup
     </div>
@@ -396,15 +432,21 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
 
             if (timeline.length > 0) {
                 let html = '';
-                timeline.forEach(entry => {
+                timeline.forEach((entry, index) => {
+                    // Truncate long messages
+                    const msg = entry.message.length > 60
+                        ? entry.message.substring(0, 57) + '...'
+                        : entry.message;
                     html += '<div class="timeline-item">' +
-                        '<div class="timeline-message">' + escapeHtml(entry.message) + '</div>' +
-                        '<div class="timeline-meta">' + entry.relativeDate + '</div>' +
+                        '<div class="timeline-message">' + escapeHtml(msg) + '</div>' +
+                        '<div class="timeline-meta">' +
+                        '<span class="date">' + entry.relativeDate + '</span>' +
+                        '</div>' +
                         '</div>';
                 });
                 timelineList.innerHTML = html;
             } else {
-                timelineList.innerHTML = '<div class="empty-state">No checkpoints yet. Create your first!</div>';
+                timelineList.innerHTML = '<div class="empty-state">No captures yet. Create your first!</div>';
             }
         }
 

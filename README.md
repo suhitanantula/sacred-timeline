@@ -23,7 +23,8 @@ Git assumes work is not linear. Multiple experiments happen simultaneously. Some
 
 | What you mean | Sacred Timeline | What Git calls it |
 |---------------|-----------------|-------------------|
-| Save this moment | `checkpoint` | git commit |
+| Save this moment | `capture` | git commit |
+| Summarize my progress | `narrate` | git log (analyzed) |
 | Get latest from cloud | `update` | git pull |
 | Send to cloud | `backup` | git push |
 | What did I change? | `changes` | git diff/status |
@@ -52,7 +53,7 @@ All commands available via `Cmd+Shift+P`:
 - etc.
 
 ### Keyboard Shortcuts
-- `Cmd+Shift+S` - Checkpoint (save this moment)
+- `Cmd+Shift+S` - Capture (save this moment)
 - `Cmd+Shift+U` - Update (get latest)
 - `Cmd+Shift+B` - Backup (send to cloud)
 

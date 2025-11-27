@@ -22,7 +22,7 @@ import * as vscode from 'vscode';
 import simpleGit, { SimpleGit, StatusResult, LogResult, DiffResult } from 'simple-git';
 import * as path from 'path';
 
-export interface CheckpointResult {
+export interface CaptureResult {
     success: boolean;
     message: string;
     hash?: string;
@@ -74,36 +74,36 @@ export class SacredTimeline {
     }
 
     /**
-     * CHECKPOINT: Save this moment
+     * CAPTURE: Save this moment
      * "I tried something and here's what I learned"
      */
-    async checkpoint(message: string): Promise<CheckpointResult> {
+    async capture(message: string): Promise<CaptureResult> {
         try {
-            // Check if there are any changes to checkpoint
+            // Check if there are any changes to capture
             const status = await this.git.status();
 
             if (status.files.length === 0) {
                 return {
                     success: false,
-                    message: 'Nothing to checkpoint - no changes detected'
+                    message: 'Nothing to capture - no changes detected'
                 };
             }
 
             // Add all changes
             await this.git.add('.');
 
-            // Create the checkpoint (commit)
+            // Create the capture (commit)
             const result = await this.git.commit(message);
 
             return {
                 success: true,
-                message: `Checkpoint created: "${message}"`,
+                message: `Captured: "${message}"`,
                 hash: result.commit
             };
         } catch (error) {
             return {
                 success: false,
-                message: `Checkpoint failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+                message: `Capture failed: ${error instanceof Error ? error.message : 'Unknown error'}`
             };
         }
     }
@@ -144,7 +144,7 @@ export class SacredTimeline {
 
             return {
                 success: true,
-                message: `Updated! Got ${status.behind} new checkpoint(s) from cloud.`,
+                message: `Updated! Got ${status.behind} new capture(s) from cloud.`,
                 behind: status.behind,
                 ahead: status.ahead
             };
@@ -198,7 +198,7 @@ export class SacredTimeline {
 
             return {
                 success: true,
-                message: `Backed up! ${status.ahead} checkpoint(s) sent to cloud.`,
+                message: `Backed up! ${status.ahead} capture(s) sent to cloud.`,
                 pushed: true
             };
         } catch (error) {
@@ -235,10 +235,10 @@ export class SacredTimeline {
 
             let summary = '';
             if (!hasChanges) {
-                summary = 'No changes since last checkpoint.';
+                summary = 'No changes since last capture.';
             } else {
                 const parts = [];
-                if (staged.length > 0) parts.push(`${staged.length} ready to checkpoint`);
+                if (staged.length > 0) parts.push(`${staged.length} ready to capture`);
                 if (unstaged.length > 0) parts.push(`${unstaged.length} modified`);
                 if (untracked.length > 0) parts.push(`${untracked.length} new`);
                 summary = parts.join(', ');
@@ -389,7 +389,7 @@ export class SacredTimeline {
 
     /**
      * RESTORE: Go back to earlier
-     * Time travel to a previous checkpoint
+     * Time travel to a previous capture
      */
     async restore(hashOrRelative: string): Promise<{ success: boolean; message: string }> {
         try {
@@ -398,7 +398,7 @@ export class SacredTimeline {
             if (status.files.length > 0) {
                 return {
                     success: false,
-                    message: 'You have unsaved changes. Checkpoint them first, or they\'ll be lost.'
+                    message: 'You have unsaved changes. Capture them first, or they\'ll be lost.'
                 };
             }
 
@@ -406,7 +406,7 @@ export class SacredTimeline {
 
             return {
                 success: true,
-                message: `Restored to checkpoint ${hashOrRelative.substring(0, 7)}`
+                message: `Restored to capture ${hashOrRelative.substring(0, 7)}`
             };
         } catch (error) {
             return {
@@ -508,6 +508,140 @@ export class SacredTimeline {
                 aheadOfCloud: 0,
                 behindCloud: 0,
                 hasConflicts: false
+            };
+        }
+    }
+
+    /**
+     * NARRATE: Summarize progress in plain English
+     * "In the last week, you made 12 captures..."
+     */
+    async narrate(days: number = 7): Promise<{
+        success: boolean;
+        summary: string;
+        stats: {
+            totalCaptures: number;
+            activeDays: number;
+            topFiles: { file: string; changes: number }[];
+            experiments: { started: number; kept: number; discarded: number };
+            busiestDay: { day: string; captures: number } | null;
+        };
+    }> {
+        try {
+            const since = new Date();
+            since.setDate(since.getDate() - days);
+            const sinceStr = since.toISOString().split('T')[0];
+
+            // Get commits in date range
+            const log = await this.git.log({ '--since': sinceStr });
+            const commits = log.all;
+
+            if (commits.length === 0) {
+                return {
+                    success: true,
+                    summary: `No captures in the last ${days} days. Time to get back to work!`,
+                    stats: {
+                        totalCaptures: 0,
+                        activeDays: 0,
+                        topFiles: [],
+                        experiments: { started: 0, kept: 0, discarded: 0 },
+                        busiestDay: null
+                    }
+                };
+            }
+
+            // Analyze commits by day
+            const dayMap: { [key: string]: number } = {};
+            const fileChanges: { [key: string]: number } = {};
+
+            for (const commit of commits) {
+                // Count by day
+                const day = new Date(commit.date).toLocaleDateString('en-US', { weekday: 'long' });
+                dayMap[day] = (dayMap[day] || 0) + 1;
+
+                // Get files changed in this commit
+                try {
+                    const diff = await this.git.diff([`${commit.hash}^`, commit.hash, '--name-only']);
+                    const files = diff.split('\n').filter(f => f.trim());
+                    files.forEach(file => {
+                        fileChanges[file] = (fileChanges[file] || 0) + 1;
+                    });
+                } catch {
+                    // First commit won't have parent, skip
+                }
+            }
+
+            // Find busiest day
+            let busiestDay: { day: string; captures: number } | null = null;
+            for (const [day, count] of Object.entries(dayMap)) {
+                if (!busiestDay || count > busiestDay.captures) {
+                    busiestDay = { day, captures: count };
+                }
+            }
+
+            // Get top 5 most changed files
+            const topFiles = Object.entries(fileChanges)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 5)
+                .map(([file, changes]) => ({ file: file.split('/').pop() || file, changes }));
+
+            // Count active days
+            const uniqueDates = new Set(commits.map(c => new Date(c.date).toDateString()));
+            const activeDays = uniqueDates.size;
+
+            // Build narrative summary
+            let summary = `In the last ${days} days, you made ${commits.length} capture${commits.length !== 1 ? 's' : ''}.`;
+
+            if (busiestDay && busiestDay.captures > 1) {
+                summary += ` Your most productive day was ${busiestDay.day} with ${busiestDay.captures} captures.`;
+            }
+
+            if (topFiles.length > 0) {
+                const topFile = topFiles[0];
+                summary += ` You worked most on "${topFile.file}" (${topFile.changes} change${topFile.changes !== 1 ? 's' : ''}).`;
+            }
+
+            if (activeDays < days / 2) {
+                summary += ` You were active on ${activeDays} day${activeDays !== 1 ? 's' : ''} - consider more consistent capturing.`;
+            }
+
+            // Look for recent milestones in commit messages
+            const recentMilestones = commits
+                .filter(c => c.message.toLowerCase().includes('finish') ||
+                            c.message.toLowerCase().includes('complete') ||
+                            c.message.toLowerCase().includes('done'))
+                .slice(0, 2);
+
+            if (recentMilestones.length > 0) {
+                summary += ` Recent milestones: "${recentMilestones[0].message}"`;
+                if (recentMilestones.length > 1) {
+                    summary += ` and "${recentMilestones[1].message}"`;
+                }
+                summary += '.';
+            }
+
+            return {
+                success: true,
+                summary,
+                stats: {
+                    totalCaptures: commits.length,
+                    activeDays,
+                    topFiles,
+                    experiments: { started: 0, kept: 0, discarded: 0 }, // TODO: track branch activity
+                    busiestDay
+                }
+            };
+        } catch (error) {
+            return {
+                success: false,
+                summary: `Could not narrate: ${error instanceof Error ? error.message : 'Unknown error'}`,
+                stats: {
+                    totalCaptures: 0,
+                    activeDays: 0,
+                    topFiles: [],
+                    experiments: { started: 0, kept: 0, discarded: 0 },
+                    busiestDay: null
+                }
             };
         }
     }

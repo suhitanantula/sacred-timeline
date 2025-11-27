@@ -32,13 +32,14 @@ export function activate(context: vscode.ExtensionContext) {
 
     // Create status bar item
     statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
-    statusBarItem.command = 'sacredTimeline.checkpoint';
+    statusBarItem.command = 'sacredTimeline.capture';
     context.subscriptions.push(statusBarItem);
     updateStatusBar();
 
     // Register commands
     const commands = [
-        vscode.commands.registerCommand('sacredTimeline.checkpoint', checkpointCommand),
+        vscode.commands.registerCommand('sacredTimeline.capture', captureCommand),
+        vscode.commands.registerCommand('sacredTimeline.narrate', narrateCommand),
         vscode.commands.registerCommand('sacredTimeline.update', updateCommand),
         vscode.commands.registerCommand('sacredTimeline.backup', backupCommand),
         vscode.commands.registerCommand('sacredTimeline.changes', changesCommand),
@@ -62,8 +63,8 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(watcher);
 }
 
-// CHECKPOINT: Save this moment
-async function checkpointCommand() {
+// CAPTURE: Save this moment
+async function captureCommand() {
     if (!sacredTimeline) {
         vscode.window.showErrorMessage('No workspace open');
         return;
@@ -72,11 +73,11 @@ async function checkpointCommand() {
     // First check if there are changes
     const changes = await sacredTimeline.changes();
     if (!changes.hasChanges) {
-        vscode.window.showInformationMessage('Nothing to checkpoint - no changes detected');
+        vscode.window.showInformationMessage('Nothing to capture - no changes detected');
         return;
     }
 
-    // Ask for checkpoint message
+    // Ask for capture message
     const message = await vscode.window.showInputBox({
         prompt: 'What did you learn or accomplish?',
         placeHolder: 'e.g., "Finished draft of chapter 3" or "Fixed the navigation issue"',
@@ -90,7 +91,7 @@ async function checkpointCommand() {
 
     if (!message) return;
 
-    const result = await sacredTimeline.checkpoint(message);
+    const result = await sacredTimeline.capture(message);
 
     if (result.success) {
         vscode.window.showInformationMessage(`$(check) ${result.message}`);
@@ -159,7 +160,7 @@ async function changesCommand() {
     const changes = await sacredTimeline.changes();
 
     if (!changes.hasChanges) {
-        vscode.window.showInformationMessage('No changes since last checkpoint');
+        vscode.window.showInformationMessage('No changes since last capture');
         return;
     }
 
@@ -167,7 +168,7 @@ async function changesCommand() {
     const items: vscode.QuickPickItem[] = [];
 
     if (changes.staged.length > 0) {
-        items.push({ label: '$(check) Ready to checkpoint', kind: vscode.QuickPickItemKind.Separator });
+        items.push({ label: '$(check) Ready to capture', kind: vscode.QuickPickItemKind.Separator });
         changes.staged.forEach(f => items.push({ label: `  ${f}`, description: 'staged' }));
     }
 
@@ -197,7 +198,7 @@ async function timelineCommand() {
     const timeline = await sacredTimeline.timeline(30);
 
     if (timeline.length === 0) {
-        vscode.window.showInformationMessage('No checkpoints yet. Create your first checkpoint!');
+        vscode.window.showInformationMessage('No captures yet. Create your first capture!');
         return;
     }
 
@@ -209,19 +210,19 @@ async function timelineCommand() {
     }));
 
     const selected = await vscode.window.showQuickPick(items, {
-        title: 'Timeline - Your checkpoint history',
-        placeHolder: 'Select a checkpoint to view or restore'
+        title: 'Timeline - Your capture history',
+        placeHolder: 'Select a capture to view or restore'
     });
 
     if (selected) {
         const action = await vscode.window.showQuickPick(
             ['View changes at this point', 'Restore to this point'],
-            { placeHolder: `Checkpoint: ${selected.label}` }
+            { placeHolder: `Capture: ${selected.label}` }
         );
 
         if (action === 'Restore to this point') {
             const confirm = await vscode.window.showWarningMessage(
-                'This will restore your files to this checkpoint. Continue?',
+                'This will restore your files to this capture. Continue?',
                 'Yes, restore',
                 'Cancel'
             );
@@ -394,6 +395,73 @@ async function untangleCommand() {
     vscode.commands.executeCommand('git.openMergeEditor');
 }
 
+// NARRATE: Summarize progress in plain English
+async function narrateCommand() {
+    if (!sacredTimeline) {
+        vscode.window.showErrorMessage('No workspace open');
+        return;
+    }
+
+    // Ask for time period
+    const period = await vscode.window.showQuickPick([
+        { label: 'Last 7 days', days: 7 },
+        { label: 'Last 14 days', days: 14 },
+        { label: 'Last 30 days', days: 30 },
+        { label: 'Last 90 days', days: 90 }
+    ], {
+        placeHolder: 'What time period should I summarize?'
+    });
+
+    if (!period) return;
+
+    const result = await vscode.window.withProgress({
+        location: vscode.ProgressLocation.Notification,
+        title: 'Analyzing your timeline...',
+        cancellable: false
+    }, async () => {
+        return await sacredTimeline!.narrate(period.days);
+    });
+
+    if (result.success) {
+        // Show summary in an information message with details option
+        const action = await vscode.window.showInformationMessage(
+            result.summary,
+            'Show Details'
+        );
+
+        if (action === 'Show Details') {
+            // Create a detailed view
+            const stats = result.stats;
+            let details = `# Your Timeline Summary (Last ${period.days} Days)\n\n`;
+            details += `## Overview\n`;
+            details += `- **Total captures:** ${stats.totalCaptures}\n`;
+            details += `- **Active days:** ${stats.activeDays}\n`;
+
+            if (stats.busiestDay) {
+                details += `- **Most productive:** ${stats.busiestDay.day} (${stats.busiestDay.captures} captures)\n`;
+            }
+
+            if (stats.topFiles.length > 0) {
+                details += `\n## Most Active Files\n`;
+                stats.topFiles.forEach((f, i) => {
+                    details += `${i + 1}. **${f.file}** - ${f.changes} change${f.changes !== 1 ? 's' : ''}\n`;
+                });
+            }
+
+            details += `\n---\n*Generated by Sacred Timeline*`;
+
+            // Show in a new document
+            const doc = await vscode.workspace.openTextDocument({
+                content: details,
+                language: 'markdown'
+            });
+            await vscode.window.showTextDocument(doc, { preview: true });
+        }
+    } else {
+        vscode.window.showErrorMessage(result.summary);
+    }
+}
+
 // Update status bar
 async function updateStatusBar() {
     if (!sacredTimeline) {
@@ -440,7 +508,7 @@ async function updateStatusBar() {
 
     statusBarItem.text = parts.join(' ');
     statusBarItem.tooltip = status.hasChanges
-        ? 'You have changes. Click to checkpoint.'
+        ? 'You have changes. Click to capture.'
         : 'Sacred Timeline - All synced';
     statusBarItem.show();
 }
