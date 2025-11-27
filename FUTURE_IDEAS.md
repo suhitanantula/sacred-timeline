@@ -55,4 +55,26 @@
 
 ---
 
-*Ideas captured: 2025-11-27*
+### Global Credential Management
+
+**Current state**: Tokens are stored per-repo in `.git/config` remote URL. Users must enter credentials for each project they connect.
+
+**Future idea**: Implement global credential storage so users enter their GitHub token once and it works for all repos.
+
+**Options to explore**:
+| Approach | Pros | Cons |
+|----------|------|------|
+| Git Credential Manager (GCM) | Cross-platform, industry standard | Requires installation |
+| macOS Keychain | Secure, native | macOS only |
+| Windows Credential Manager | Secure, native | Windows only |
+| Git credential store | Built-in, no dependencies | Plain text file |
+
+**Tradeoffs**:
+- Current per-repo approach: Simple, transparent, self-contained, but repetitive
+- Global approach: Enter once works everywhere, but more "magic" and platform-specific
+
+**Consideration**: For non-coders with 1-2 vaults, current approach is fine. For power users with many repos, global credentials would be better UX.
+
+---
+
+*Ideas captured: 2025-11-27, 2025-11-28*
