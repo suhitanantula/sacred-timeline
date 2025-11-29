@@ -164,9 +164,13 @@ npm run compile
 Press F5 to launch Extension Development Host
 ```
 
+## Related
+
+- [Sacred Timeline for Obsidian](https://github.com/suhitanantula/sacred-timeline-obsidian) - Plugin for Obsidian vaults
+
 ## Credits
 
-Built by [Suhit Anantula](https://github.com/suhitanantula) as part of the Co-Intelligent Organisation book project.
+Built by [Suhit Anantula](https://suhitanantula.com) as part of the Co-Intelligent Organisation project.
 
 The language design was inspired by the insight that top-level coders, strategists, and knowledge workers will all work the same way in the AI age.
 
