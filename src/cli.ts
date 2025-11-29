@@ -14,7 +14,94 @@ const color = {
     yellow: (s: string) => `\x1b[33m${s}\x1b[0m`,
     blue: (s: string) => `\x1b[34m${s}\x1b[0m`,
     cyan: (s: string) => `\x1b[36m${s}\x1b[0m`,
+    grey: (s: string) => `\x1b[90m${s}\x1b[0m`,
 };
+
+// Smart icons based on commit message keywords
+function getSmartIcon(message: string): string {
+    const msg = message.toLowerCase();
+
+    // Check for conventional commit prefixes first
+    if (msg.startsWith('feat:') || msg.startsWith('feat(')) return '✨';
+    if (msg.startsWith('fix:') || msg.startsWith('fix(')) return '🔧';
+    if (msg.startsWith('docs:') || msg.startsWith('doc:')) return '📝';
+    if (msg.startsWith('style:')) return '🎨';
+    if (msg.startsWith('refactor:')) return '♻️';
+    if (msg.startsWith('test:')) return '🧪';
+    if (msg.startsWith('chore:')) return '🔩';
+    if (msg.startsWith('security:') || msg.startsWith('sec:')) return '🔒';
+    if (msg.startsWith('perf:')) return '⚡';
+    if (msg.startsWith('build:') || msg.startsWith('ci:')) return '📦';
+
+    // Check for keywords in message
+    if (msg.includes('initial') || msg.includes('first') || msg.includes('start')) return '🎉';
+    if (msg.includes('add') || msg.includes('new') || msg.includes('create')) return '✨';
+    if (msg.includes('fix') || msg.includes('bug') || msg.includes('issue')) return '🔧';
+    if (msg.includes('update') || msg.includes('change') || msg.includes('modify')) return '🔄';
+    if (msg.includes('remove') || msg.includes('delete') || msg.includes('clean')) return '🗑️';
+    if (msg.includes('refactor') || msg.includes('improve') || msg.includes('enhance')) return '♻️';
+    if (msg.includes('rename')) return '📛';
+    if (msg.includes('move') || msg.includes('reorganize')) return '📦';
+    if (msg.includes('merge')) return '🔀';
+    if (msg.includes('security') || msg.includes('auth') || msg.includes('password')) return '🔒';
+    if (msg.includes('test')) return '🧪';
+    if (msg.includes('doc') || msg.includes('readme') || msg.includes('comment')) return '📝';
+    if (msg.includes('config') || msg.includes('setting')) return '⚙️';
+    if (msg.includes('deploy') || msg.includes('release') || msg.includes('publish')) return '🚀';
+    if (msg.includes('wip') || msg.includes('progress') || msg.includes('draft')) return '🚧';
+    if (msg.includes('finish') || msg.includes('complete') || msg.includes('done')) return '✅';
+
+    return '○';  // Default: simple circle
+}
+
+// Clean up commit message for display (remove conventional commit prefixes)
+function cleanMessage(message: string): string {
+    // Remove conventional commit prefix like "feat: " or "fix(scope): "
+    let clean = message.replace(/^(feat|fix|docs|style|refactor|test|chore|security|perf|build|ci)(\([^)]+\))?:\s*/i, '');
+
+    // Capitalize first letter
+    clean = clean.charAt(0).toUpperCase() + clean.slice(1);
+
+    return clean;
+}
+
+// Group timeline entries by date
+function groupByDate(entries: { date: Date; message: string; relativeDate: string; hash: string; shortHash: string; author: string }[]): { [key: string]: typeof entries } {
+    const groups: { [key: string]: typeof entries } = {};
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const yesterday = new Date(today.getTime() - 86400000);
+
+    for (const entry of entries) {
+        const entryDate = new Date(entry.date.getFullYear(), entry.date.getMonth(), entry.date.getDate());
+        let label: string;
+
+        if (entryDate.getTime() === today.getTime()) {
+            label = 'Today';
+        } else if (entryDate.getTime() === yesterday.getTime()) {
+            label = 'Yesterday';
+        } else {
+            // Format as "Nov 22" for other dates
+            label = entry.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        }
+
+        if (!groups[label]) {
+            groups[label] = [];
+        }
+        groups[label].push(entry);
+    }
+
+    return groups;
+}
+
+// Get color based on recency (green -> grey fade)
+function getRecencyColor(dateLabel: string, groupIndex: number, totalGroups: number): (s: string) => string {
+    if (dateLabel === 'Today') return color.green;
+    if (dateLabel === 'Yesterday') return color.cyan;
+    if (groupIndex < totalGroups * 0.3) return color.blue;
+    if (groupIndex < totalGroups * 0.6) return color.dim;
+    return color.grey;
+}
 
 function getHelpText(): string {
     return `
@@ -125,21 +212,67 @@ async function main() {
             }
 
             case 'timeline': {
-                const entries = await sacred.timeline(15);
+                const entries = await sacred.timeline(30);
                 if (entries.length === 0) {
                     console.log(color.dim('No captures yet. Create your first with: sacred capture "your message"'));
                 } else {
-                    console.log(color.bold('\nTimeline:\n'));
-                    entries.forEach((entry, i) => {
-                        const dot = i === 0 ? color.green('●') : color.dim('○');
-                        const hash = color.dim(entry.shortHash);
-                        const msg = entry.message.length > 60
-                            ? entry.message.substring(0, 57) + '...'
-                            : entry.message;
-                        const time = color.dim(`(${entry.relativeDate})`);
-                        console.log(`  ${dot} ${hash} ${msg} ${time}`);
-                    });
+                    // Get repo name from current directory
+                    const repoName = cwd.split('/').pop() || 'Timeline';
+
+                    // Print header
                     console.log();
+                    console.log(color.bold(repoName));
+                    console.log(color.dim('━'.repeat(Math.min(repoName.length + 10, 40))));
+                    console.log();
+
+                    // Group entries by date
+                    const grouped = groupByDate(entries);
+
+                    // Calculate max commits per day for activity bar scaling
+                    const maxCommits = Math.max(...Object.values(grouped).map(g => g.length));
+
+                    // Display each group
+                    const groupKeys = Object.keys(grouped);
+                    const totalGroups = groupKeys.length;
+
+                    groupKeys.forEach((dateLabel, groupIndex) => {
+                        const dayEntries = grouped[dateLabel];
+
+                        // Get color based on recency
+                        const recencyColor = getRecencyColor(dateLabel, groupIndex, totalGroups);
+
+                        // Activity bar (1-6 blocks based on relative activity)
+                        const barLength = Math.ceil((dayEntries.length / maxCommits) * 6);
+                        const activityBar = '█'.repeat(barLength);
+
+                        // Date header with activity bar
+                        const padding = 45 - dateLabel.length;
+                        const headerColor = groupIndex === 0 ? color.bold : (groupIndex < 2 ? (s: string) => s : color.dim);
+                        console.log(headerColor(dateLabel) + ' '.repeat(Math.max(padding, 2)) + recencyColor(activityBar));
+
+                        // Entries for this day
+                        dayEntries.forEach((entry, i) => {
+                            const isFirst = groupIndex === 0 && i === 0;
+                            const dot = isFirst ? color.green('●') : recencyColor('○');
+                            const icon = getSmartIcon(entry.message);
+                            const cleanMsg = cleanMessage(entry.message);
+                            const displayMsg = cleanMsg.length > 42
+                                ? cleanMsg.substring(0, 39) + '...'
+                                : cleanMsg;
+
+                            // Apply recency color to message for older entries
+                            const msgColor = groupIndex < 2 ? (s: string) => s : recencyColor;
+
+                            // Show time for today's entries
+                            let timeStr = '';
+                            if (dateLabel === 'Today') {
+                                timeStr = '  ' + color.dim(entry.relativeDate);
+                            }
+
+                            console.log(`  ${dot} ${icon} ${msgColor(displayMsg)}${timeStr}`);
+                        });
+                        console.log();
+                    });
                 }
                 break;
             }
