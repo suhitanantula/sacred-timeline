@@ -22,7 +22,7 @@
   "activationEvents": [
     "workspaceContains:.git",
     "onCommand:sacredTimeline.capture",
-    "onCommand:sacredTimeline.update",
+    "onCommand:sacredTimeline.latest",
     "onCommand:sacredTimeline.backup",
     "onCommand:sacredTimeline.changes",
     "onCommand:sacredTimeline.timeline"
@@ -46,8 +46,8 @@
         "icon": "$(book)"
       },
       {
-        "command": "sacredTimeline.update",
-        "title": "Update: Get latest from cloud",
+        "command": "sacredTimeline.latest",
+        "title": "Latest: Bring the latest from cloud",
         "category": "Sacred Timeline",
         "icon": "$(cloud-download)"
       },
@@ -137,7 +137,7 @@
           "when": "workspaceFolderCount > 0"
         },
         {
-          "command": "sacredTimeline.update",
+          "command": "sacredTimeline.latest",
           "when": "workspaceFolderCount > 0"
         },
         {
@@ -154,9 +154,9 @@
         "when": "editorTextFocus"
       },
       {
-        "command": "sacredTimeline.update",
-        "key": "ctrl+shift+u",
-        "mac": "cmd+shift+u"
+        "command": "sacredTimeline.latest",
+        "key": "ctrl+shift+l",
+        "mac": "cmd+shift+l"
       },
       {
         "command": "sacredTimeline.backup",

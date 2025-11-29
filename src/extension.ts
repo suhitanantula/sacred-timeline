@@ -40,7 +40,7 @@ export function activate(context: vscode.ExtensionContext) {
     const commands = [
         vscode.commands.registerCommand('sacredTimeline.capture', captureCommand),
         vscode.commands.registerCommand('sacredTimeline.narrate', narrateCommand),
-        vscode.commands.registerCommand('sacredTimeline.update', updateCommand),
+        vscode.commands.registerCommand('sacredTimeline.latest', updateCommand),
         vscode.commands.registerCommand('sacredTimeline.backup', backupCommand),
         vscode.commands.registerCommand('sacredTimeline.changes', changesCommand),
         vscode.commands.registerCommand('sacredTimeline.timeline', timelineCommand),
@@ -102,7 +102,7 @@ async function captureCommand() {
     updateStatusBar();
 }
 
-// UPDATE: Get latest from cloud
+// LATEST: Bring the latest from cloud
 async function updateCommand() {
     if (!sacredTimeline) {
         vscode.window.showErrorMessage('No workspace open');
@@ -111,7 +111,7 @@ async function updateCommand() {
 
     const result = await vscode.window.withProgress({
         location: vscode.ProgressLocation.Notification,
-        title: 'Updating from cloud...',
+        title: 'Getting the latest from cloud...',
         cancellable: false
     }, async () => {
         return await sacredTimeline!.update();

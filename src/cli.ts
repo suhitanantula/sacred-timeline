@@ -22,7 +22,7 @@ ${color.bold('Sacred Timeline')} - Git for humans
 
 ${color.dim('Commands:')}
   ${color.green('capture')} "message"     Save this moment with a description
-  ${color.green('update')}               Get latest from cloud
+  ${color.green('latest')}               Bring the latest from cloud
   ${color.green('backup')}               Send to cloud
   ${color.green('changes')}              What did I change?
   ${color.green('timeline')}             Show me history
@@ -80,8 +80,8 @@ async function main() {
                 break;
             }
 
-            case 'update': {
-                console.log(color.dim('Updating from cloud...'));
+            case 'latest': {
+                console.log(color.dim('Getting the latest from cloud...'));
                 const result = await sacred.update();
                 console.log(result.success
                     ? color.green('✓ ') + result.message
@@ -258,7 +258,7 @@ async function main() {
                     console.log(color.blue('↑ ') + `${status.aheadOfCloud} capture(s) to backup`);
                 }
                 if (status.behindCloud > 0) {
-                    console.log(color.blue('↓ ') + `${status.behindCloud} capture(s) to update`);
+                    console.log(color.blue('↓ ') + `${status.behindCloud} new capture(s) available`);
                 }
                 if (status.aheadOfCloud === 0 && status.behindCloud === 0 && !changes.hasChanges) {
                     console.log(color.green('☁ ') + 'In sync with cloud');
@@ -322,7 +322,7 @@ sacred_auto_status
                 }
 
                 if (status.behindCloud > 0) {
-                    parts.push(color.blue(`↓${status.behindCloud} to update`));
+                    parts.push(color.blue(`↓${status.behindCloud} available`));
                 }
 
                 if (status.hasConflicts) {

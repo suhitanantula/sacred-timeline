@@ -35,8 +35,8 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
                 case 'capture':
                     vscode.commands.executeCommand('sacredTimeline.capture');
                     break;
-                case 'update':
-                    vscode.commands.executeCommand('sacredTimeline.update');
+                case 'latest':
+                    vscode.commands.executeCommand('sacredTimeline.latest');
                     break;
                 case 'backup':
                     vscode.commands.executeCommand('sacredTimeline.backup');
@@ -327,9 +327,9 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
                 <span class="icon">📸</span>
                 Capture
             </button>
-            <button onclick="sendMessage('update')">
+            <button onclick="sendMessage('latest')">
                 <span class="icon">⬇️</span>
-                Update
+                Latest
             </button>
             <button onclick="sendMessage('backup')">
                 <span class="icon">☁️</span>
@@ -386,7 +386,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
 
     <div class="keyboard-hint">
         <kbd>Cmd+Shift+S</kbd> Capture &nbsp;
-        <kbd>Cmd+Shift+U</kbd> Update &nbsp;
+        <kbd>Cmd+Shift+L</kbd> Latest &nbsp;
         <kbd>Cmd+Shift+B</kbd> Backup
     </div>
 
