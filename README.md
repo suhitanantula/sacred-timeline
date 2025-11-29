@@ -2,9 +2,32 @@
 
 **Git for humans: Innovation architecture for the AI age**
 
-Most knowledge workers have never heard of Git. Yet it's the most powerful tool for managing ideas, experiments, and collaborative intelligence ever created.
+> *"Your world may seem singular to you, but really, it's a teeny, tiny, weenie speck on a vast cosmic canvas. In reality, the only universe considered the true universe exists on the Sacred Timeline, and it is guarded zealously by all of us here at the TVA."*
+>
+> —Mr. Paradox to Deadpool
 
-Sacred Timeline makes version control accessible to non-coders through human-friendly language and visual interfaces.
+---
+
+## The Idea
+
+In Marvel's Loki, the **Sacred Timeline** is the main reality—protected and preserved. **Branch timelines** are alternate realities where you can explore different choices safely. The **TVA** manages it all.
+
+Git works the same way. Your main branch is your Sacred Timeline. Feature branches are alternate realities for experimentation. Git is your TVA.
+
+**Sacred Timeline brings this power to everyone**—not just coders.
+
+| Marvel Concept | Git Concept | What It Means |
+|----------------|-------------|---------------|
+| Sacred Timeline | main branch | Your working, proven version |
+| Branch Timeline | feature branch | Safe space to experiment |
+| TVA | Git system | Manages all your timelines |
+| Nexus Event | commit | A captured decision point |
+| Timeline Merge | git merge | Bring successful experiments back |
+| Pruning | branch delete | Remove failed experiments |
+
+**The superpower:** Try bold ideas without fear. If the experiment fails, your Sacred Timeline is untouched. If it succeeds, merge it in.
+
+---
 
 ## The Problem
 
@@ -116,8 +139,6 @@ This project is built on the idea that Git is **innovation architecture**, not j
 - **Latest** = "Bringing the latest collective thinking into my work"
 - **Experiment** = "Starting a safe space to try something risky"
 - **Keep** = "This experiment succeeded, make it the new normal"
-
-The Marvel analogy: Your main timeline is sacred. Experiments are variant timelines. You can explore variants without breaking the sacred timeline, and merge the successful ones back.
 
 ## Who This Is For
 
