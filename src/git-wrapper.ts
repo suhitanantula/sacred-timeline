@@ -40,6 +40,18 @@ export interface BackupResult {
     pushed?: boolean;
 }
 
+export interface WorktreeInfo {
+    path: string;
+    branch: string;
+    name: string;
+}
+
+export interface BackupAllResult {
+    success: boolean;
+    message: string;
+    results: { name: string; branch: string; success: boolean; message: string }[];
+}
+
 export interface ChangesResult {
     hasChanges: boolean;
     staged: string[];
@@ -214,6 +226,138 @@ export class SacredTimeline {
             return {
                 success: false,
                 message: `Backup failed: ${errorMsg}`
+            };
+        }
+    }
+
+    /**
+     * Get list of worktrees for this repository
+     */
+    async getWorktrees(): Promise<WorktreeInfo[]> {
+        try {
+            const result = await this.git.raw(['worktree', 'list', '--porcelain']);
+            const worktrees: WorktreeInfo[] = [];
+
+            const blocks = result.trim().split('\n\n');
+            for (const block of blocks) {
+                const lines = block.split('\n');
+                let worktreePath = '';
+                let branch = '';
+
+                for (const line of lines) {
+                    if (line.startsWith('worktree ')) {
+                        worktreePath = line.substring(9);
+                    } else if (line.startsWith('branch ')) {
+                        // Branch format: refs/heads/branch-name
+                        branch = line.substring(7).replace('refs/heads/', '');
+                    }
+                }
+
+                if (worktreePath && branch) {
+                    const name = worktreePath.split('/').pop() || worktreePath;
+                    worktrees.push({ path: worktreePath, branch, name });
+                }
+            }
+
+            return worktrees;
+        } catch {
+            return [];
+        }
+    }
+
+    /**
+     * BACKUP-ALL: Backup current repo and all worktrees
+     * Commits any pending changes and pushes each worktree's branch
+     */
+    async backupAll(): Promise<BackupAllResult> {
+        const results: { name: string; branch: string; success: boolean; message: string }[] = [];
+
+        try {
+            // Check if we have a remote configured
+            const remotes = await this.git.getRemotes(true);
+            if (remotes.length === 0) {
+                return {
+                    success: false,
+                    message: 'Not connected to cloud yet. Use "Connect" first.',
+                    results: []
+                };
+            }
+
+            // Get all worktrees
+            const worktrees = await this.getWorktrees();
+
+            if (worktrees.length === 0) {
+                // No worktrees, just do regular backup
+                const result = await this.backup();
+                return {
+                    success: result.success,
+                    message: result.message,
+                    results: []
+                };
+            }
+
+            // Process each worktree
+            for (const wt of worktrees) {
+                try {
+                    const wtGit = simpleGit(wt.path);
+
+                    // Check for uncommitted changes
+                    const status = await wtGit.status();
+
+                    // Auto-commit if there are changes
+                    if (status.files.length > 0) {
+                        await wtGit.add('.');
+                        const timestamp = new Date().toISOString().split('T')[0] + ' ' +
+                                         new Date().toTimeString().split(' ')[0].substring(0, 5);
+                        await wtGit.commit(`Backup ${timestamp}`);
+                    }
+
+                    // Push the branch
+                    const pushStatus = await wtGit.status();
+                    if (pushStatus.ahead > 0) {
+                        await wtGit.push('origin', wt.branch);
+                        results.push({
+                            name: wt.name,
+                            branch: wt.branch,
+                            success: true,
+                            message: `Pushed ${pushStatus.ahead} capture(s)`
+                        });
+                    } else {
+                        results.push({
+                            name: wt.name,
+                            branch: wt.branch,
+                            success: true,
+                            message: 'Already in sync'
+                        });
+                    }
+                } catch (error) {
+                    const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+                    results.push({
+                        name: wt.name,
+                        branch: wt.branch,
+                        success: false,
+                        message: errorMsg.includes('rejected')
+                            ? 'Needs update first'
+                            : `Failed: ${errorMsg.substring(0, 50)}`
+                    });
+                }
+            }
+
+            const successCount = results.filter(r => r.success).length;
+            const failCount = results.filter(r => !r.success).length;
+
+            return {
+                success: failCount === 0,
+                message: failCount === 0
+                    ? `All ${successCount} worktree(s) backed up!`
+                    : `${successCount} succeeded, ${failCount} failed`,
+                results
+            };
+        } catch (error) {
+            return {
+                success: false,
+                message: `Backup failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+                results
             };
         }
     }

@@ -111,6 +111,7 @@ ${color.dim('Commands:')}
   ${color.green('capture')} "message"     Save this moment with a description
   ${color.green('latest')}               Bring the latest from cloud
   ${color.green('backup')}               Send to cloud
+  ${color.green('backup-all')}           Backup all worktrees (for multi-branch repos)
   ${color.green('changes')}              What did I change?
   ${color.green('timeline')}             Show me history
   ${color.green('narrate')} [days]       Tell me the story of my recent work (default: 7 days)
@@ -182,6 +183,31 @@ async function main() {
                 console.log(result.success
                     ? color.green('☁ ') + result.message
                     : color.yellow('○ ') + result.message);
+                break;
+            }
+
+            case 'backup-all': {
+                console.log(color.dim('Backing up all worktrees...\n'));
+                const result = await sacred.backupAll();
+
+                if (result.results.length === 0) {
+                    // No worktrees, just show regular backup result
+                    console.log(result.success
+                        ? color.green('☁ ') + result.message
+                        : color.yellow('○ ') + result.message);
+                } else {
+                    // Show each worktree result
+                    for (const wt of result.results) {
+                        const icon = wt.success ? color.green('☁') : color.yellow('○');
+                        const branchInfo = color.dim(`(${wt.branch})`);
+                        console.log(`${icon} ${wt.name} ${branchInfo}`);
+                        console.log(color.dim(`    ${wt.message}`));
+                    }
+                    console.log();
+                    console.log(result.success
+                        ? color.green('✓ ') + result.message
+                        : color.yellow('○ ') + result.message);
+                }
                 break;
             }
 

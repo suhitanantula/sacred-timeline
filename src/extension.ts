@@ -42,6 +42,7 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.commands.registerCommand('sacredTimeline.narrate', narrateCommand),
         vscode.commands.registerCommand('sacredTimeline.latest', updateCommand),
         vscode.commands.registerCommand('sacredTimeline.backup', backupCommand),
+        vscode.commands.registerCommand('sacredTimeline.backupAll', backupAllCommand),
         vscode.commands.registerCommand('sacredTimeline.changes', changesCommand),
         vscode.commands.registerCommand('sacredTimeline.timeline', timelineCommand),
         vscode.commands.registerCommand('sacredTimeline.experiment', experimentCommand),
@@ -145,6 +146,54 @@ async function backupCommand() {
         vscode.window.showInformationMessage(`$(cloud-upload) ${result.message}`);
     } else {
         vscode.window.showWarningMessage(result.message);
+    }
+
+    updateStatusBar();
+}
+
+// BACKUP-ALL: Backup all worktrees
+async function backupAllCommand() {
+    if (!sacredTimeline) {
+        vscode.window.showErrorMessage('No workspace open');
+        return;
+    }
+
+    const result = await vscode.window.withProgress({
+        location: vscode.ProgressLocation.Notification,
+        title: 'Backing up all worktrees...',
+        cancellable: false
+    }, async () => {
+        return await sacredTimeline!.backupAll();
+    });
+
+    if (result.results.length === 0) {
+        // No worktrees, show regular result
+        if (result.success) {
+            vscode.window.showInformationMessage(`$(cloud-upload) ${result.message}`);
+        } else {
+            vscode.window.showWarningMessage(result.message);
+        }
+    } else {
+        // Build summary of all worktrees
+        const successCount = result.results.filter(r => r.success).length;
+        const failCount = result.results.filter(r => !r.success).length;
+
+        if (failCount === 0) {
+            const details = result.results.map(r => `${r.name} (${r.branch}): ${r.message}`).join('\n');
+            const action = await vscode.window.showInformationMessage(
+                `$(cloud-upload) All ${successCount} worktree(s) backed up!`,
+                'Show Details'
+            );
+            if (action === 'Show Details') {
+                vscode.window.showInformationMessage(details, { modal: true });
+            }
+        } else {
+            const failedItems = result.results.filter(r => !r.success);
+            const failedNames = failedItems.map(r => r.name).join(', ');
+            vscode.window.showWarningMessage(
+                `${successCount} succeeded, ${failCount} failed (${failedNames})`
+            );
+        }
     }
 
     updateStatusBar();

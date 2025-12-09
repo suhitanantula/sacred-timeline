@@ -41,6 +41,9 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
                 case 'backup':
                     vscode.commands.executeCommand('sacredTimeline.backup');
                     break;
+                case 'backupAll':
+                    vscode.commands.executeCommand('sacredTimeline.backupAll');
+                    break;
                 case 'changes':
                     vscode.commands.executeCommand('sacredTimeline.changes');
                     break;
@@ -76,13 +79,16 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
         const changes = await this._sacredTimeline.changes();
         const timeline = await this._sacredTimeline.timeline(5);
         const isConnected = await this._sacredTimeline.isConnected();
+        const worktrees = await this._sacredTimeline.getWorktrees();
 
         this._view.webview.postMessage({
             type: 'update',
             status,
             changes,
             timeline,
-            isConnected
+            isConnected,
+            hasWorktrees: worktrees.length > 1,
+            worktreeCount: worktrees.length
         });
     }
 
@@ -331,9 +337,13 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
                 <span class="icon">⬇️</span>
                 Latest
             </button>
-            <button onclick="sendMessage('backup')">
+            <button onclick="sendMessage('backup')" id="backupBtn">
                 <span class="icon">☁️</span>
                 Backup
+            </button>
+            <button onclick="sendMessage('backupAll')" id="backupAllBtn" style="display: none; grid-column: span 2;">
+                <span class="icon">☁️</span>
+                Backup All Worktrees
             </button>
         </div>
     </div>
@@ -407,7 +417,17 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
         });
 
         function updateUI(data) {
-            const { status, changes, timeline, isConnected } = data;
+            const { status, changes, timeline, isConnected, hasWorktrees, worktreeCount } = data;
+
+            // Update backup buttons based on worktrees
+            const backupBtn = document.getElementById('backupBtn');
+            const backupAllBtn = document.getElementById('backupAllBtn');
+            if (hasWorktrees) {
+                backupAllBtn.style.display = 'flex';
+                backupAllBtn.innerHTML = '<span class="icon">☁️</span> Backup All (' + worktreeCount + ' worktrees)';
+            } else {
+                backupAllBtn.style.display = 'none';
+            }
 
             // Update status badge
             const badge = document.getElementById('statusBadge');

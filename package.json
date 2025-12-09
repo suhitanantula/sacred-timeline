@@ -58,6 +58,12 @@
         "icon": "$(cloud-upload)"
       },
       {
+        "command": "sacredTimeline.backupAll",
+        "title": "Backup All: Backup all worktrees",
+        "category": "Sacred Timeline",
+        "icon": "$(cloud-upload)"
+      },
+      {
         "command": "sacredTimeline.changes",
         "title": "Changes: What did I change?",
         "category": "Sacred Timeline",
