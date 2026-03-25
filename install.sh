@@ -38,7 +38,28 @@ else
     echo "  (Install Claude Code first, then re-run this script)"
 fi
 
-# 3. Done
+# 3. Shell integration
+echo ""
+SHELL_RC=""
+if [ -f "$HOME/.zshrc" ]; then
+    SHELL_RC="$HOME/.zshrc"
+elif [ -f "$HOME/.bashrc" ]; then
+    SHELL_RC="$HOME/.bashrc"
+fi
+
+if [ -n "$SHELL_RC" ]; then
+    echo -e "Want Sacred Timeline to show status automatically when you cd into a project? (y/n)"
+    read -r REPLY </dev/tty
+    if [[ "$REPLY" =~ ^[Yy]$ ]]; then
+        sacred init-shell >> "$SHELL_RC"
+        echo -e "${GREEN}✓${NC} Shell integration added to $SHELL_RC"
+        echo -e "${YELLOW}  Run: source $SHELL_RC${NC}"
+    else
+        echo -e "${YELLOW}○${NC} Skipped — run 'sacred init-shell >> $SHELL_RC && source $SHELL_RC' any time to enable it."
+    fi
+fi
+
+# 4. Done
 echo ""
 echo -e "${GREEN}✓${NC} Sacred Timeline installed!"
 echo ""
