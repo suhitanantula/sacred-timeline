@@ -19,22 +19,23 @@ echo "Installing sacred CLI..."
 npm install -g @suhit/sacred-timeline
 
 # 2. Install the Claude Code skill
-SKILL_DIR="$HOME/.claude/skills"
-if [ -d "$SKILL_DIR" ]; then
+SKILL_DIR="$HOME/.claude/skills/sacred-timeline"
+if [ -d "$HOME/.claude/skills" ]; then
     echo "Installing Claude Code skill..."
+    mkdir -p "$SKILL_DIR"
     SKILL_SRC="$(dirname "$0")/skills/sacred-timeline.md"
 
     # If running via curl (not from repo), fetch the skill file
     if [ ! -f "$SKILL_SRC" ]; then
         curl -fsSL https://raw.githubusercontent.com/suhitanantula/sacred-timeline/main/skills/sacred-timeline.md \
-             -o "$SKILL_DIR/sacred-timeline.md"
+             -o "$SKILL_DIR/SKILL.md"
     else
-        cp "$SKILL_SRC" "$SKILL_DIR/sacred-timeline.md"
+        cp "$SKILL_SRC" "$SKILL_DIR/SKILL.md"
     fi
     echo -e "${GREEN}✓${NC} Claude Code skill installed"
 else
     echo -e "${YELLOW}○${NC} ~/.claude/skills not found — skipping Claude Code skill"
-    echo "  (Install Claude Code first, then copy skills/sacred-timeline.md to ~/.claude/skills/)"
+    echo "  (Install Claude Code first, then re-run this script)"
 fi
 
 # 3. Done
