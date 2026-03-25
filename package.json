@@ -2,7 +2,7 @@
   "name": "@suhitanantula/sacred-timeline",
   "displayName": "Sacred Timeline",
   "description": "Git for humans: Innovation architecture for the AI age",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "publisher": "helix-mind",
   "engines": {
     "vscode": "^1.85.0"
@@ -30,7 +30,9 @@
   "files": [
     "out",
     "README.md",
-    "FUTURE_IDEAS.md"
+    "skills",
+    "install.sh",
+    "loki-sacred-timeline.jpg"
   ],
   "main": "./out/extension.js",
   "bin": {

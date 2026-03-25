@@ -3,3 +3,7 @@ node_modules/
 .vscode-test/
 *.vsix
 .DS_Store
+
+# Internal — keep in Box, not on GitHub
+docs/superpowers/
+docs/strategy/
