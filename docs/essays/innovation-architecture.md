@@ -86,7 +86,7 @@ Your agent installs it, explains it, and walks you through your first capture. Y
 
 **If you prefer the start page**, go to [suhitanantula.github.io/sacred-timeline](https://suhitanantula.github.io/sacred-timeline) — same prompt, copy button, two versions depending on your tool.
 
-**If you just want the CLI:**
+**If you just want the CLI** (no Claude Code skill):
 ```
 npm install -g @suhit/sacred-timeline
 ```

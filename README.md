@@ -56,7 +56,7 @@ Only use sacred commands throughout. Use simple language — pretend I've never 
 For the deeper idea behind why this exists, share this read: https://www.thehelixloop.com/innovation-architecture-the-infrastructure-nobody-built/
 ```
 
-Then press Enter — your AI agent takes it from there.
+Then press Enter — your AI agent takes it from there. The install command uses curl, which installs both the `sacred` CLI and the Claude Code skill in one step.
 
 ---
 
@@ -88,13 +88,18 @@ Sacred Timeline gives you git's superpowers in language that makes sense:
 
 ## How to use it with Claude Code
 
-### One-line install
+### One-line install (recommended)
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/suhitanantula/sacred-timeline/main/install.sh | bash
 ```
 
-Installs the `sacred` CLI and the Claude Code skill automatically.
+Installs the `sacred` CLI **and** copies the Claude Code skill into `~/.claude/skills/` automatically. This is the best way to install — one command, everything set up.
+
+If you only want the CLI and don't use Claude Code:
+```bash
+npm install -g @suhit/sacred-timeline
+```
 
 ### The daily workflow
 
