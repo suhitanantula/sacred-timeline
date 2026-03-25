@@ -433,30 +433,18 @@ async function main() {
             case 'init-shell': {
                 const shellHook = `
 # Sacred Timeline - auto-status on cd
-# Add this to your ~/.zshrc or ~/.bashrc
-
 sacred_auto_status() {
     if [ -d ".git" ]; then
         sacred status-line 2>/dev/null
     fi
 }
-
-# Override cd to show status when entering git repos
 cd() {
     builtin cd "$@" && sacred_auto_status
 }
-
-# Show status on new terminal if already in a git repo
 sacred_auto_status
 `;
-                console.log(color.bold('\nSacred Timeline Shell Integration\n'));
-                console.log(color.dim('Add this to your ~/.zshrc (or ~/.bashrc):'));
-                console.log(color.dim('─'.repeat(50)));
-                console.log(shellHook);
-                console.log(color.dim('─'.repeat(50)));
-                console.log(color.dim('\nQuick setup:'));
-                console.log(color.green('  sacred init-shell >> ~/.zshrc && source ~/.zshrc'));
-                console.log();
+                // Only print the raw hook — no color codes, so it's safe to pipe to .zshrc
+                process.stdout.write(shellHook);
                 break;
             }
 
