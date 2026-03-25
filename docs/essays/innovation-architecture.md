@@ -72,7 +72,7 @@ I want to start using Sacred Timeline to protect and track my work. I don't know
 Once I understand what I'm getting into, then help me set it up:
 
 - Check if Sacred Timeline is installed: command -v sacred
-- If not installed: npm install -g @suhit/sacred-timeline
+- If not installed: curl -fsSL https://raw.githubusercontent.com/suhitanantula/sacred-timeline/main/install.sh | bash
 - Run `sacred status` and tell me what it shows
 - If the folder isn't tracked yet, run `sacred start`
 - Walk me through my first capture: sacred capture "my message here"
@@ -85,11 +85,6 @@ Only use sacred commands throughout. Use simple language — pretend I've never 
 Your agent installs it, explains it, and walks you through your first capture. You're protected from that point forward.
 
 **If you prefer the start page**, go to [suhitanantula.github.io/sacred-timeline](https://suhitanantula.github.io/sacred-timeline) — same prompt, copy button, two versions depending on your tool.
-
-**If you just want the CLI** (no Claude Code skill):
-```
-npm install -g @suhit/sacred-timeline
-```
 
 ---
 

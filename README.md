@@ -44,7 +44,7 @@ I want to start using Sacred Timeline to protect and track my work. I don't know
 Once I understand what I'm getting into, then help me set it up:
 
 - Check if Sacred Timeline is installed: command -v sacred
-- If not installed: npm install -g @suhit/sacred-timeline
+- If not installed: curl -fsSL https://raw.githubusercontent.com/suhitanantula/sacred-timeline/main/install.sh | bash
 - Run `sacred status` and tell me what it shows
 - If the folder isn't tracked yet, run `sacred start`
 - Walk me through my first capture: sacred capture "my message here"
@@ -88,18 +88,13 @@ Sacred Timeline gives you git's superpowers in language that makes sense:
 
 ## How to use it with Claude Code
 
-### One-line install (recommended)
+### Install
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/suhitanantula/sacred-timeline/main/install.sh | bash
 ```
 
-Installs the `sacred` CLI **and** copies the Claude Code skill into `~/.claude/skills/` automatically. This is the best way to install — one command, everything set up.
-
-If you only want the CLI and don't use Claude Code:
-```bash
-npm install -g @suhit/sacred-timeline
-```
+One command. Installs the `sacred` CLI and the Claude Code skill automatically.
 
 ### The daily workflow
 
