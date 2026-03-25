@@ -109,6 +109,12 @@ Always shows:
 
 ## Installation
 
+### Not sure where to start?
+
+**[suhitanantula.github.io/sacred-timeline](https://suhitanantula.github.io/sacred-timeline)** — copy a prompt, paste it into Claude, and Claude walks you through the whole setup. No technical knowledge needed.
+
+---
+
 ### One-line install (CLI + Claude Code skill)
 ```bash
 curl -fsSL https://raw.githubusercontent.com/suhitanantula/sacred-timeline/main/install.sh | bash
