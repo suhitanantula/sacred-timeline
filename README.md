@@ -96,25 +96,28 @@ curl -fsSL https://raw.githubusercontent.com/suhitanantula/sacred-timeline/main/
 
 Installs the `sacred` CLI and the Claude Code skill automatically.
 
-### In any Claude Code session
+### The daily workflow
 
-Type `/sacred-timeline` at the start of a session. Claude will:
-- Check your timeline status
-- Speak in sacred language throughout
-- Suggest captures at natural milestones
-- Wrap up the session with a plain-English story of what was built
-
-No API key needed. Sacred Timeline runs as a Claude Code skill — it's just instructions that travel with every session.
-
-### The daily Claude Code workflow
+Sacred Timeline is a CLI. You use it by typing `sacred` commands directly in your terminal — no slash commands, no agent required.
 
 ```
-Start session → /sacred-timeline
-Build with Claude Code
+Do your work (or build with Claude Code)
 Reach a milestone → sacred capture "what we built"
 Try something risky → sacred experiment "new-approach"
 Done for the day → sacred backup
 ```
+
+### Optional: Claude Code skill
+
+If you use Claude Code, the `/sacred-timeline` skill makes Claude aware of your timeline throughout the session — suggesting captures at natural milestones and narrating what was built. It's a layer on top of the CLI, not a replacement for it.
+
+Type `/sacred-timeline` at the start of a Claude Code session and Claude will:
+- Check your timeline status
+- Speak in sacred language throughout
+- Suggest captures at natural milestones
+- Wrap up with a plain-English story of what was built
+
+No API key needed. The skill is just instructions — install it once, available in every session.
 
 ---
 
