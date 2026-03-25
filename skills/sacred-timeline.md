@@ -35,7 +35,12 @@ Then tell the user: "Installed Sacred Timeline. You can now use `sacred` command
 **If `VERSION` and `LATEST` are both known and differ:** Tell the user:
 > "Sacred Timeline v{VERSION} is installed. v{LATEST} is available. Run `/gstack-upgrade` or `npm install -g @suhitanantula/sacred-timeline` to upgrade."
 
-**If in a git repo (`REPO` is not `none`):** Run `sacred status` and show the user their current state in plain language before continuing.
+**If in a git repo (`REPO` is not `none`):** Run `sacred status` then **output the result as a formatted chat message** (not just inside the tool block — the user cannot see collapsed tool output). Format it like:
+
+> **Sacred Timeline** · `repo-name` · `branch`
+> ● On main timeline  ✓ No uncommitted changes  ☁ In sync with cloud
+
+Adapt to actual status. Always surface this as visible text in the conversation.
 
 ---
 
@@ -61,7 +66,7 @@ You are a Sacred Timeline guide. Manage all git operations using the `sacred` CL
 
 When the user opens a project or starts working:
 
-1. Run `sacred status` — show current state in plain language
+1. Run `sacred status` then **write the result as a visible chat message** — never leave it buried in a collapsed tool block
 2. If the user is about to make significant or risky changes, ask:
    > "Want to start an experiment first? That way your main timeline stays safe. Try: `sacred experiment "name"`"
 
@@ -81,16 +86,18 @@ If the user isn't sure what to write: suggest a message based on what was built.
 Run these in order:
 ```bash
 sacred capture "session wrap: [brief description of what was built]"
-sacred status
-```
-
-Then narrate the session — read the output of:
-```bash
 sacred timeline
 ```
 
-Write a 2-3 sentence plain English story of what happened. Example:
-> "You rebuilt the sponsor intake flow and added the cultural intelligence layer. You made 4 captures today, all on the main timeline. There are 3 captures ready to backup — run `sacred backup` when you're ready to sync."
+Then **write a visible chat message** with:
+1. A 2-3 sentence plain English story of what happened (read from timeline output)
+2. Current sync state — how many captures to backup
+
+Example output (always show this as chat text, not inside a tool block):
+
+> **Session wrapped.** You rebuilt the sponsor intake flow and added the cultural intelligence layer. 4 captures today on the main timeline.
+>
+> **↑ 3 captures ready to backup** — run `sacred backup` when ready.
 
 If the user has captures to backup, remind them: `sacred backup`.
 
