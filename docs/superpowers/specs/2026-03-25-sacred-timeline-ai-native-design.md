@@ -47,13 +47,16 @@ Three surfaces, one coherent experience:
 ┌─────────────────────────────────────────────────────┐
 │                  Sacred Timeline                     │
 ├──────────────┬──────────────────┬───────────────────┤
-│ Claude Code  │       CLI        │     Web App       │
-│   Skill      │  (already built) │   (dashboard)     │
-│              │                  │                   │
+│ Claude Code  │       CLI        │  Desktop App      │
+│   Skill      │                  │  (Tauri+Next.js)  │
+│              │ sacred capture   │                   │
 │ Auto-capture │ sacred capture   │ Visual timeline   │
-│ AI narrate   │ sacred narrate   │ All your projects │
-│ Experiments  │ sacred experiment│ Team experiments  │
-│ Session wrap │ sacred timeline  │ AI story of work  │
+│  (--auto)    │   --auto         │ All your projects │
+│ AI narrate   │ sacred narrate   │ AI weekly story   │
+│  (--brief)   │   --brief        │ Experiment tracker│
+│ Experiments  │ sacred experiment│ Team view         │
+│ Session wrap │ sacred config    │                   │
+│              │ sacred register  │                   │
 └──────────────┴──────────────────┴───────────────────┘
               All backed by git underneath
 ```
@@ -87,6 +90,10 @@ sacred narrate
 
 **Implementation:** Claude API (`claude-sonnet-4-6`). Diff + commit messages sent as context. Response formatted as narrative prose with optional structured sections (most active files, experiments tried, key decisions).
 
+**API Configuration:** Users provide their Claude API key once via `sacred config --api-key <key>`. The key is stored in `~/.sacred/config.json` (not in the repo). On first run of any narrate command, Sacred Timeline prompts for the key if absent. If the key is missing or invalid, narrate falls back to the current commit-counting summary with a clear message: "Add your Claude API key to unlock AI narration: `sacred config --api-key <key>`".
+
+**Note:** `narrate <hash>` requires a new argument parsing path in the CLI (Phase 2). The current CLI parses the narrate argument as an integer; a hash requires a separate branch to detect and handle. This is a non-breaking addition — `narrate 7` continues to work unchanged.
+
 ---
 
 ## Section 2 — Claude Code Skill Integration
@@ -110,13 +117,9 @@ Session ends (Stop hook)
   → prompt: "You have X captures to backup — run sacred backup to sync"
 ```
 
-**Vocabulary training:** The skill trains Claude to always use sacred language:
-- Never "commit" → "capture"
-- Never "branch" → "experiment"
-- Never "push" → "backup"
-- Explains what it's doing in human terms before doing it
+**Vocabulary guidance:** The skill file includes system prompt instructions telling Claude to use sacred language consistently — "capture" not "commit", "experiment" not "branch", "backup" not "push". LLMs are not perfectly consistent at this across long sessions; the instructions reduce drift but do not eliminate it. This is a best-effort UX improvement, not a strict guarantee.
 
-**Claude Code `settings.json` hooks:**
+**Claude Code `settings.json` hooks (requires Phase 1 CLI additions):**
 ```json
 {
   "hooks": {
@@ -125,6 +128,12 @@ Session ends (Stop hook)
   }
 }
 ```
+
+**Phase 1 CLI additions required before hooks work:**
+- `sacred capture --auto` — stages all changes and generates a commit message from the diff using Claude API (no message argument required when flag is present). Fallback when API key is absent or call fails: use a timestamped default message ("session capture: YYYY-MM-DD HH:MM") with a warning, matching the narrate fallback pattern
+- `sacred narrate --brief` — runs narration but outputs a 2-3 sentence summary instead of full prose (requires LLM narration from Phase 1)
+
+These flags must ship as part of Phase 1 before the hooks are usable. The skill file should not be published until both flags are implemented.
 
 ---
 
@@ -192,36 +201,47 @@ The "home" for your Sacred Timeline across all projects.
 | Share a timeline | Read-only link — "here's what I built this week" |
 | Team view | See teammates' timelines, merge experiments together |
 
-**Tech stack:** Next.js, GitHub OAuth or local git path, Claude API for narration. Start local-first (read repos on machine), add cloud sync in v2.
+**Deployment model:** Phase 3 ships as a **local-first desktop app** (Tauri or Electron wrapper around Next.js). The app runs on the user's machine and reads git repos from disk directly — no cloud required, no repo registration step. A `~/.sacred/projects.json` registry is maintained by the CLI (`sacred register` adds a repo; the web app reads this file to discover projects). Cloud sync (GitHub OAuth, team features) is Phase 3 v2.
 
-**Business model:** Teams buying Sacred Timeline web app instead of git training consultants. The "git onboarding" budget is the market.
+**Tech stack:** Next.js + Tauri for the desktop shell, Claude API for narration, `~/.sacred/projects.json` as the cross-project index. GitHub OAuth added in Phase 3 v2 to enable cloud sync and sharing.
+
+**Business model:** Sacred Timeline CLI and skill are free and open source (MIT). The web app is open source and self-hostable. The paid offering is **Sacred Timeline Cloud** — hosted version with team timelines, shared experiments, and managed Claude API costs (no user API key required). Teams pay instead of hiring a git training consultant. Self-hosted users pay nothing; teams who want zero setup pay for Cloud.
 
 ---
 
 ## Implementation Phases
 
-**Phase 1 — Claude Code Skill (ship fast)**
-- Sacred Timeline skill file for Claude Code
-- Auto-capture hook on session Stop
-- AI-powered `sacred narrate` using Claude API
+**Phase 1 — CLI + Claude Code Skill (ship together)**
+- LLM narration engine: `sacred narrate` calls Claude API (`claude-sonnet-4-6`), replaces commit-counting stub
+- `sacred config --api-key <key>` for one-time API key setup, stored in `~/.sacred/config.json`
+- `sacred capture --auto` — auto-generates commit message from diff via LLM (no message argument required)
+- `sacred narrate --brief` — 2-3 sentence summary mode for use in hooks
 - `sacred config --show-git` dev mode toggle
+- Sacred Timeline skill file for Claude Code (published after CLI additions above are shipped)
+- Auto-capture + narrate hooks in `settings.json`
 
-**Phase 2 — CLI Upgrade**
-- Real LLM narration replacing the current commit-counting stub
-- `sacred narrate <hash>` for explaining individual changes
-- Auto-generated capture messages from diff
+**Phase 2 — CLI Power Features**
+- `sacred narrate <hash>` — explain a specific commit (requires new argument parsing path alongside existing integer parsing)
+- `sacred register` — add current repo to `~/.sacred/projects.json` cross-project index
+- Conflict resolution: `sacred untangle` (existing vocabulary term, not yet implemented)
 
-**Phase 3 — Web App**
-- Local-first dashboard reading git repos
+**Phase 3 — Desktop App**
+- Tauri + Next.js desktop app, local-first (no cloud required)
+- Reads repos from `~/.sacred/projects.json` (requires Phase 2's `sacred register`)
 - Cross-project timeline view
-- AI weekly story
-- GitHub OAuth for cloud sync
+- AI weekly story powered by Claude API
+- `sacred status-line` one-line status output (already implemented in CLI)
+
+**Phase 3 v2 — Cloud**
+- GitHub OAuth
+- Cloud sync and shared timelines
+- Read-only share links
 
 **Phase 4 — Expand**
-- OpenClaw / Cline integration
-- Obsidian plugin upgrade with narration
-- Team features
-- Mobile companion
+- OpenClaw / Cline integration (same skill pattern as Claude Code)
+- Obsidian plugin upgrade with LLM narration
+- Team features in Sacred Timeline Cloud
+- Mobile read-only companion (view timeline + narration on phone; capture via mobile is out of scope for v1)
 
 ---
 
