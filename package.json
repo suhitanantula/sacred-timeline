@@ -2,7 +2,7 @@
   "name": "@suhit/sacred-timeline",
   "displayName": "Sacred Timeline",
   "description": "Git for humans: Innovation architecture for the AI age",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "publisher": "helix-mind",
   "engines": {
     "vscode": "^1.85.0"
@@ -36,7 +36,7 @@
   ],
   "main": "./out/extension.js",
   "bin": {
-    "sacred": "./out/cli.js"
+    "sacred": "out/cli.js"
   },
   "contributes": {
     "commands": [
