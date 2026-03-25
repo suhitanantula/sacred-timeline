@@ -4,19 +4,38 @@
 
 ![Sacred Timeline demo](demo.gif)
 
+---
+
+## The Origin Story
+
+Watching Marvel's **Loki**, we had a realization.
+
+The TVA protects the Sacred Timeline — the one true, proven version of reality. Variants create branch timelines where they can explore dangerous, divergent possibilities. If a branch succeeds, it gets woven back in. If it fails, it gets pruned. No harm done to the Sacred Timeline.
+
+**That's exactly how git works.**
+
+We'd been using git for years without seeing it. The moment we did, the whole system clicked. Main branch = Sacred Timeline. Feature branches = alternate realities for safe experimentation. Git = the TVA. Commits = nexus events that freeze a moment in time.
+
+The problem: git speaks in commands designed for engineers. But the *concepts* underneath — safe experimentation, protected history, mergeable parallel realities — belong to everyone. Writers. Strategists. Researchers. Anyone building anything with AI.
+
+So we built the human interface for it.
+
 > *"Your world may seem singular to you, but really, it's a teeny, tiny, weenie speck on a vast cosmic canvas. In reality, the only universe considered the true universe exists on the Sacred Timeline, and it is guarded zealously by all of us here at the TVA."*
 >
 > —Mr. Paradox to Deadpool
+
+![The Sacred Timeline from Marvel's Loki — a glowing golden thread of protected reality, branching into variant timelines](https://upload.wikimedia.org/wikipedia/en/7/7a/Loki_TV_series_poster.jpg)
+*The Sacred Timeline from Marvel's Loki. Your main branch is this — protected, proven, untouchable.*
 
 ---
 
 ## The Idea
 
-In Marvel's Loki, the **Sacred Timeline** is the main reality—protected and preserved. **Branch timelines** are alternate realities where you can explore different choices safely. The **TVA** manages it all.
+In Marvel's Loki, the **Sacred Timeline** is the main reality — protected and preserved. **Branch timelines** are alternate realities where you can explore different choices safely. The **TVA** manages it all.
 
 Git works the same way. Your main branch is your Sacred Timeline. Feature branches are alternate realities for experimentation. Git is your TVA.
 
-**Sacred Timeline brings this power to everyone**—not just coders.
+**Sacred Timeline brings this power to everyone** — not just coders.
 
 | Marvel Concept | Git Concept | What It Means |
 |----------------|-------------|---------------|
@@ -90,7 +109,14 @@ Always shows:
 
 ## Installation
 
-### CLI (Terminal)
+### One-line install (CLI + Claude Code skill)
+```bash
+curl -fsSL https://raw.githubusercontent.com/suhitanantula/sacred-timeline/main/install.sh | bash
+```
+
+This installs the `sacred` CLI globally and, if Claude Code is detected, installs the Sacred Timeline skill so you can use `/sacred-timeline` in any session.
+
+### CLI only
 ```bash
 npm install -g @suhitanantula/sacred-timeline
 ```
@@ -102,6 +128,13 @@ sacred latest
 sacred backup
 sacred timeline
 ```
+
+### Claude Code Skill
+Once installed, open any project in Claude Code and type:
+```
+/sacred-timeline
+```
+Claude will check your status, speak in sacred language, and narrate your work in plain English — no API key required.
 
 ### VS Code Extension
 1. Open VS Code
@@ -144,11 +177,13 @@ This project is built on the idea that Git is **innovation architecture**, not j
 
 ## Who This Is For
 
-- Writers managing book manuscripts
-- Consultants building frameworks
-- Researchers tracking ideas
-- Knowledge workers who collaborate with AI
-- Anyone tired of `_v2_final_FINAL.docx`
+- **Vibe coders** — using Claude Code, Cursor, or OpenClaw to build without knowing git exists
+- **AI tool users** — wanting to understand what the AI changed and roll back safely
+- **Developers** — wanting a human-readable layer on top of full git power
+- **Writers** managing book manuscripts, articles, or long-form research
+- **Consultants and strategists** building frameworks, decks, and plans iteratively
+- **Researchers** tracking ideas, experiments, and findings
+- **Anyone** tired of `_v2_final_FINAL.docx`
 
 ## Development
 
