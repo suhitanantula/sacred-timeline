@@ -146,7 +146,7 @@ To upgrade Sacred Timeline to the latest version:
 npm install -g @suhit/sacred-timeline
 ```
 
-Or run `/gstack-upgrade` if gstack is installed.
+Then tell the user: "Sacred Timeline is now up to date."
 
 ---
 
