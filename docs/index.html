@@ -240,13 +240,21 @@ First, check if Sacred Timeline is installed by running:
 If it's not installed, install it with:
   npm install -g @suhit/sacred-timeline
 
-Then:
-1. Run `sacred status` and tell me what it shows in plain English
-2. If I'm not in a project yet, help me start one with `sacred start`
-3. Walk me through capturing my first moment
-4. Explain what backup means and how to connect to cloud storage
+Then guide me through these steps:
 
-Use simple language throughout — pretend I've never heard of git. Call everything by its Sacred Timeline name: capture, experiment, backup, timeline.</div>
+1. Run `sacred status` and tell me what it shows in plain English
+
+2. If I'm not in a project folder yet, help me navigate to one. If the folder isn't a Sacred Timeline yet, run `sacred start` to initialise it.
+
+3. Walk me through my first capture. The correct syntax is:
+   sacred capture "my message here"
+   (just a plain message in quotes — no flags like -m)
+
+4. Explain what backup means and how to connect to cloud. To connect to GitHub the command is:
+   sacred connect <github-url>
+   Help me find my GitHub URL if I don't know it.
+
+Important: only use sacred commands (capture, experiment, backup, latest, connect, status, timeline, narrate). Do not use raw git commands or invent flags that aren't in these examples. Use simple language throughout — pretend I've never heard of git.</div>
     </div>
 
     <p class="then">Then press <strong>Enter</strong> — Claude takes it from there.</p>
