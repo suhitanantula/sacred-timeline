@@ -8,3 +8,4 @@ node_modules/
 docs/superpowers/
 docs/strategy/
 docs/launch/
+.gstack/

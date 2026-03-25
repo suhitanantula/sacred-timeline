@@ -1,6 +1,6 @@
 # Sacred Timeline
 
-**Git for humans: Innovation architecture for the AI age.** Capture your work, protect your progress, travel through time — no coding required.
+**Capture your work, protect your progress, travel through time — no coding required.**
 
 ![Sacred Timeline demo](demo.gif)
 
@@ -123,22 +123,6 @@ OpenClaw agents can call these directly. Sacred Timeline becomes the memory laye
 
 ---
 
-## Install
-
-### Claude Code (recommended)
-```bash
-curl -fsSL https://raw.githubusercontent.com/suhitanantula/sacred-timeline/main/install.sh | bash
-```
-Then type `/sacred-timeline` in any Claude Code session.
-
-### CLI
-```bash
-npm install -g @suhit/sacred-timeline
-```
-
-### VS Code Extension
-Coming soon.
-
 ### Not sure where to start?
 
 **[suhitanantula.github.io/sacred-timeline](https://suhitanantula.github.io/sacred-timeline)** — copy a prompt, paste it into Claude, and Claude walks you through the whole setup.
@@ -147,12 +131,16 @@ Coming soon.
 
 ## Quick Start
 
+> **First:** open your terminal and `cd` into the folder you want to protect before running any sacred commands. Sacred Timeline tracks whichever folder you're in.
+
 ### New project:
 1. `sacred start` — initialise the timeline
 2. Do your work (or let AI do it)
 3. `sacred capture "what we built"` — freeze this moment
-4. `sacred connect <github-url>` — link to cloud
+4. `sacred connect <github-url>` — link to cloud (see below)
 5. `sacred backup` — send it up
+
+**Getting your GitHub URL:** go to [github.com](https://github.com), create a free account if you don't have one, click **New repository**, give it a name, and copy the URL it shows you (looks like `https://github.com/yourname/yourproject.git`). Paste that into `sacred connect`.
 
 ### Daily workflow:
 1. `sacred latest` — get any changes
