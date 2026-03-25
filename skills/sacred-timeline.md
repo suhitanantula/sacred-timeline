@@ -16,7 +16,7 @@ description: |
 ```bash
 _SACRED_INSTALLED=$(command -v sacred 2>/dev/null && echo "yes" || echo "no")
 _SACRED_VERSION=$(node -e "try{const p=require(require('path').join(require('child_process').execSync('npm root -g').toString().trim(),'sacred-timeline/package.json'));console.log(p.version)}catch(e){console.log('unknown')}" 2>/dev/null || echo "unknown")
-_SACRED_LATEST=$(npm view @suhitanantula/sacred-timeline version 2>/dev/null || echo "unknown")
+_SACRED_LATEST=$(npm view @suhit/sacred-timeline version 2>/dev/null || echo "unknown")
 _BRANCH=$(git branch --show-current 2>/dev/null || echo "none")
 _REPO=$(basename "$(git rev-parse --show-toplevel 2>/dev/null)" 2>/dev/null || echo "none")
 echo "INSTALLED: $_SACRED_INSTALLED"

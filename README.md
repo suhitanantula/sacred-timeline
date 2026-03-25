@@ -118,7 +118,7 @@ This installs the `sacred` CLI globally and, if Claude Code is detected, install
 
 ### CLI only
 ```bash
-npm install -g @suhitanantula/sacred-timeline
+npm install -g @suhit/sacred-timeline
 ```
 
 Then use anywhere:

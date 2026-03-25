@@ -16,7 +16,7 @@ echo ""
 
 # 1. Install the CLI
 echo "Installing sacred CLI..."
-npm install -g @suhitanantula/sacred-timeline
+npm install -g @suhit/sacred-timeline
 
 # 2. Install the Claude Code skill
 SKILL_DIR="$HOME/.claude/skills"
@@ -27,6 +27,7 @@ if [ -d "$SKILL_DIR" ]; then
     # If running via curl (not from repo), fetch the skill file
     if [ ! -f "$SKILL_SRC" ]; then
         curl -fsSL https://raw.githubusercontent.com/suhitanantula/sacred-timeline/main/skills/sacred-timeline.md \
+
              -o "$SKILL_DIR/sacred-timeline.md"
     else
         cp "$SKILL_SRC" "$SKILL_DIR/sacred-timeline.md"
