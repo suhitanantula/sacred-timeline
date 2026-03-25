@@ -24,8 +24,8 @@ So we built the human interface for it.
 >
 > —Mr. Paradox to Deadpool
 
-![The Sacred Timeline from Marvel's Loki — a glowing golden thread of protected reality, branching into variant timelines](https://upload.wikimedia.org/wikipedia/en/7/7a/Loki_TV_series_poster.jpg)
-*The Sacred Timeline from Marvel's Loki. Your main branch is this — protected, proven, untouchable.*
+![The Sacred Timeline from Marvel's Loki — the TVA's model showing the main timeline (red) protected from branching variant realities](loki-sacred-timeline.jpg)
+*The Sacred Timeline from Marvel's Loki (©2021 Marvel). The red thread is your main branch — protected, proven, untouchable. The branches are your experiments.*
 
 ---
 
