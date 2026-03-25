@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sacred Timeline — Start Here</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      background: #0a0a0f;
+      color: #e8e8f0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .container {
+      max-width: 680px;
+      width: 100%;
+    }
+
+    .badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #c8a96e;
+      border: 1px solid #c8a96e40;
+      border-radius: 4px;
+      padding: 4px 10px;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      font-size: clamp(28px, 5vw, 42px);
+      font-weight: 700;
+      line-height: 1.15;
+      margin-bottom: 16px;
+      color: #f0f0f8;
+    }
+
+    h1 span {
+      color: #c8a96e;
+    }
+
+    .subtitle {
+      font-size: 17px;
+      color: #8888aa;
+      line-height: 1.6;
+      margin-bottom: 40px;
+    }
+
+    .step {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      margin-bottom: 32px;
+    }
+
+    .step-num {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #1a1a2e;
+      border: 1px solid #3a3a5e;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+      color: #c8a96e;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .step-content h3 {
+      font-size: 16px;
+      font-weight: 600;
+      color: #e8e8f0;
+      margin-bottom: 6px;
+    }
+
+    .step-content p {
+      font-size: 14px;
+      color: #7777aa;
+      line-height: 1.6;
+    }
+
+    .prompt-box {
+      background: #0f0f1e;
+      border: 1px solid #2a2a4a;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+
+    .prompt-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      border-bottom: 1px solid #1e1e3a;
+      background: #0d0d1a;
+    }
+
+    .prompt-header-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #5555aa;
+    }
+
+    .copy-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: #c8a96e;
+      color: #0a0a0f;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 14px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .copy-btn:hover {
+      background: #d4b87e;
+    }
+
+    .copy-btn.copied {
+      background: #4caf87;
+      color: #fff;
+    }
+
+    .prompt-text {
+      padding: 20px;
+      font-size: 14px;
+      line-height: 1.7;
+      color: #c8c8e8;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: inherit;
+    }
+
+    .then {
+      font-size: 13px;
+      color: #5555aa;
+      margin-bottom: 40px;
+      padding-left: 4px;
+    }
+
+    .then strong {
+      color: #8888cc;
+    }
+
+    .divider {
+      border: none;
+      border-top: 1px solid #1a1a2e;
+      margin: 40px 0;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+
+    .footer-links a {
+      font-size: 13px;
+      color: #5555aa;
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+
+    .footer-links a:hover {
+      color: #c8a96e;
+    }
+
+    .loki-quote {
+      font-size: 13px;
+      font-style: italic;
+      color: #3a3a5e;
+      margin-top: 32px;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="badge">Sacred Timeline</div>
+
+    <h1>Not sure<br>where to start? <span>Start here.</span></h1>
+
+    <p class="subtitle">
+      Sacred Timeline protects your work like git protects code — without needing to know git exists.
+      Just copy the prompt below and paste it into Claude.
+    </p>
+
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <h3>Open Claude Code (or Claude.ai)</h3>
+        <p>Any Claude session works. Claude Code gives you the full experience — it can run commands for you.</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <h3>Copy this prompt</h3>
+        <p>This tells Claude exactly what you need — no technical knowledge required.</p>
+      </div>
+    </div>
+
+    <div class="prompt-box">
+      <div class="prompt-header">
+        <span class="prompt-header-label">Paste into Claude</span>
+        <button class="copy-btn" onclick="copyPrompt(this)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+          </svg>
+          Copy
+        </button>
+      </div>
+      <div class="prompt-text" id="prompt-content">I want to start using Sacred Timeline to protect and track my work. I don't know git — please guide me through setup in plain language.
+
+First, check if Sacred Timeline is installed by running:
+  command -v sacred
+
+If it's not installed, install it with:
+  npm install -g @suhit/sacred-timeline
+
+Then:
+1. Run `sacred status` and tell me what it shows in plain English
+2. If I'm not in a project yet, help me start one with `sacred start`
+3. Walk me through capturing my first moment
+4. Explain what backup means and how to connect to cloud storage
+
+Use simple language throughout — pretend I've never heard of git. Call everything by its Sacred Timeline name: capture, experiment, backup, timeline.</div>
+    </div>
+
+    <p class="then">Then press <strong>Enter</strong> — Claude takes it from there.</p>
+
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <h3>Follow Claude's guidance</h3>
+        <p>Claude will install Sacred Timeline, show you your status, and walk you through your first capture. You're protected from this point forward.</p>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <div class="footer-links">
+      <a href="https://github.com/suhitanantula/sacred-timeline">GitHub</a>
+      <a href="https://www.npmjs.com/package/@suhit/sacred-timeline">npm</a>
+      <a href="https://github.com/suhitanantula/sacred-timeline/blob/main/README.md">Documentation</a>
+    </div>
+
+    <p class="loki-quote">"The only universe considered the true universe exists on the Sacred Timeline, and it is guarded zealously." — Mr. Paradox</p>
+  </div>
+
+  <script>
+    function copyPrompt(btn) {
+      const text = document.getElementById('prompt-content').innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        btn.classList.add('copied');
+        btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Copied!`;
+        setTimeout(() => {
+          btn.classList.remove('copied');
+          btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> Copy`;
+        }, 2500);
+      });
+    }
+  </script>
+</body>
+</html>
