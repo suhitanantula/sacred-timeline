@@ -2,6 +2,8 @@
 
 **Git for humans: Innovation architecture for the AI age**
 
+![Sacred Timeline demo](demo.gif)
+
 > *"Your world may seem singular to you, but really, it's a teeny, tiny, weenie speck on a vast cosmic canvas. In reality, the only universe considered the true universe exists on the Sacred Timeline, and it is guarded zealously by all of us here at the TVA."*
 >
 > —Mr. Paradox to Deadpool
@@ -90,7 +92,7 @@ Always shows:
 
 ### CLI (Terminal)
 ```bash
-npm install -g github:suhitanantula/sacred-timeline
+npm install -g @suhitanantula/sacred-timeline
 ```
 
 Then use anywhere:

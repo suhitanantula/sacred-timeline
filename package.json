@@ -1,8 +1,8 @@
 {
-  "name": "sacred-timeline",
+  "name": "@suhitanantula/sacred-timeline",
   "displayName": "Sacred Timeline",
   "description": "Git for humans: Innovation architecture for the AI age",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "publisher": "helix-mind",
   "engines": {
     "vscode": "^1.85.0"
@@ -26,6 +26,11 @@
     "onCommand:sacredTimeline.backup",
     "onCommand:sacredTimeline.changes",
     "onCommand:sacredTimeline.timeline"
+  ],
+  "files": [
+    "out",
+    "README.md",
+    "FUTURE_IDEAS.md"
   ],
   "main": "./out/extension.js",
   "bin": {
