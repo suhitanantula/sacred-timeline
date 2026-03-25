@@ -86,59 +86,40 @@ Sacred Timeline gives you git's superpowers in language that makes sense:
 
 ---
 
-## How to use it with Claude Code
-
-### Install
+## Install
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/suhitanantula/sacred-timeline/main/install.sh | bash
 ```
 
-One command. Installs the `sacred` CLI and the Claude Code skill automatically.
+One command. Installs the `sacred` CLI, the Claude Code/Codex skill, and optionally sets up auto-status on `cd`.
 
-### The daily workflow
+---
 
-Sacred Timeline is a CLI. You use it by typing `sacred` commands directly in your terminal — no slash commands, no agent required.
+## How it works
+
+**The CLI is the foundation.** Sacred Timeline works with any agent — OpenClaw, Claude Code, Cursor, Gemini, or just your terminal. Any agent that can run commands can call `sacred` directly. No setup, no skill file needed.
 
 ```
-Do your work (or build with Claude Code)
+Do your work (or build with AI)
 Reach a milestone → sacred capture "what we built"
 Try something risky → sacred experiment "new-approach"
 Done for the day → sacred backup
 ```
 
-### Optional: Claude Code skill
-
-If you use Claude Code, the `/sacred-timeline` skill makes Claude aware of your timeline throughout the session — suggesting captures at natural milestones and narrating what was built. It's a layer on top of the CLI, not a replacement for it.
+**The skill is the upgrade.** If you use Claude Code or Codex, the `/sacred-timeline` skill makes your agent proactive — it checks your status at session start, suggests captures at natural milestones, and wraps up with a plain-English story of what was built. The curl install adds it automatically.
 
 Type `/sacred-timeline` at the start of a Claude Code session and Claude will:
-- Check your timeline status
+- Check your timeline status automatically
 - Speak in sacred language throughout
-- Suggest captures at natural milestones
+- Suggest captures without being asked
 - Wrap up with a plain-English story of what was built
-
-No API key needed. The skill is just instructions — install it once, available in every session.
-
----
-
-## How to use it with OpenClaw
-
-The `sacred` CLI works anywhere. In your OpenClaw sessions:
-
-```bash
-sacred status          # where am I?
-sacred capture "what was built"
-sacred experiment "try-this-direction"
-sacred backup
-```
-
-OpenClaw agents can call these directly. Sacred Timeline becomes the memory layer for every agent session.
 
 ---
 
 ### Not sure where to start?
 
-**[suhitanantula.github.io/sacred-timeline](https://suhitanantula.github.io/sacred-timeline)** — copy a prompt, paste it into Claude, and Claude walks you through the whole setup.
+**[suhitanantula.github.io/sacred-timeline](https://suhitanantula.github.io/sacred-timeline)** — copy a prompt, paste it into any agent, and it walks you through the whole setup.
 
 ---
 
