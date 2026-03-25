@@ -6,6 +6,14 @@
 
 ---
 
+> *"Safety to experiment is infrastructure, not culture. You can't culture-initiative your way to an experimental organisation. People make rational decisions based on the cost of failure. If that cost is high, they play it safe — regardless of what the culture deck says."*
+>
+> — [Innovation Architecture: The Infrastructure Nobody Built](https://www.thehelixloop.com/innovation-architecture-the-infrastructure-nobody-built/)
+
+Git solved this for engineers twenty years ago. Sacred Timeline brings the same architecture to everyone building in the AI age — writers, strategists, consultants, vibe coders. Same power, human language.
+
+---
+
 ## Built for Claude Code and OpenClaw users
 
 ![Sacred Timeline running inside Claude Code — showing /sacred-timeline status, a suggested capture, and the captured confirmation](claude-code-demo.png)
@@ -44,6 +52,8 @@ Once I understand what I'm getting into, then help me set it up:
 - Explain how to back up to GitHub when I'm ready: sacred connect <github-url>
 
 Only use sacred commands throughout. Use simple language — pretend I've never heard of git.
+
+For the deeper idea behind why this exists, share this read: https://www.thehelixloop.com/innovation-architecture-the-infrastructure-nobody-built/
 ```
 
 Then press Enter — your AI agent takes it from there.
