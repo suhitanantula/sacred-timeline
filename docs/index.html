@@ -302,29 +302,23 @@
           Copy
         </button>
       </div>
-      <div class="prompt-text" id="prompt-content">I want to start using Sacred Timeline to protect and track my work. I don't know git — please guide me through setup in plain language.
+      <div class="prompt-text" id="prompt-content">I want to start using Sacred Timeline to protect and track my work. I don't know git. Before we do anything else, please explain:
 
-First, check if Sacred Timeline is installed by running:
-  command -v sacred
+1. What Sacred Timeline actually is — in plain English, no jargon
+2. Why someone like me would want it
+3. What "capture", "backup", and "experiment" mean in practice
 
-If it's not installed, install it with:
-  npm install -g @suhit/sacred-timeline
+Once I understand what I'm getting into, then help me set it up:
 
-Then guide me through these steps:
+- Check if Sacred Timeline is installed: command -v sacred
+- If not installed: npm install -g @suhit/sacred-timeline
+- Run `sacred status` and tell me what it shows
+- If the folder isn't tracked yet, run `sacred start`
+- Walk me through my first capture: sacred capture "my message here"
+  (plain message in quotes — no -m flag)
+- Explain how to back up to GitHub when I'm ready: sacred connect <github-url>
 
-1. Run `sacred status` and tell me what it shows in plain English
-
-2. If I'm not in a project folder yet, help me navigate to one. If the folder isn't a Sacred Timeline yet, run `sacred start` to initialise it.
-
-3. Walk me through my first capture. The correct syntax is:
-   sacred capture "my message here"
-   (just a plain message in quotes — no flags like -m)
-
-4. Explain what backup means and how to connect to cloud. To connect to GitHub the command is:
-   sacred connect <github-url>
-   Help me find my GitHub URL if I don't know it.
-
-Important: only use sacred commands (capture, experiment, backup, latest, connect, status, timeline, narrate). Do not use raw git commands or invent flags that aren't in these examples. Use simple language throughout — pretend I've never heard of git.</div>
+Only use sacred commands throughout. Use simple language — pretend I've never heard of git.</div>
     </div>
 
     <p class="then">Then press <strong>Enter</strong> — Claude takes it from there.</p>
