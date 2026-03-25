@@ -185,6 +185,60 @@
       color: #c8a96e;
     }
 
+    .explainer {
+      background: #0d0d1a;
+      border: 1px solid #1e1e3a;
+      border-radius: 10px;
+      padding: 20px 24px;
+      margin-bottom: 40px;
+    }
+
+    .explainer h3 {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #4444aa;
+      margin-bottom: 14px;
+    }
+
+    .explainer-row {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      margin-bottom: 10px;
+    }
+
+    .explainer-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .explainer-label {
+      font-size: 13px;
+      font-weight: 700;
+      color: #c8a96e;
+      min-width: 100px;
+      flex-shrink: 0;
+      padding-top: 1px;
+    }
+
+    .explainer-def {
+      font-size: 13px;
+      color: #6666aa;
+      line-height: 1.6;
+    }
+
+    .explainer-def a {
+      color: #7777cc;
+      text-decoration: none;
+      border-bottom: 1px solid #3a3a6a;
+    }
+
+    .explainer-def a:hover {
+      color: #c8a96e;
+      border-bottom-color: #c8a96e;
+    }
+
     .loki-quote {
       font-size: 13px;
       font-style: italic;
@@ -204,6 +258,22 @@
       Sacred Timeline protects your work like git protects code — without needing to know git exists.
       Just copy the prompt below and paste it into Claude.
     </p>
+
+    <div class="explainer">
+      <h3>New to this? Here's what these words mean</h3>
+      <div class="explainer-row">
+        <span class="explainer-label">Git</span>
+        <span class="explainer-def">A system that saves every version of your work so you can never lose anything or break anything permanently. Like an undo button that goes back months.</span>
+      </div>
+      <div class="explainer-row">
+        <span class="explainer-label">GitHub</span>
+        <span class="explainer-def">A free website that stores your work safely in the cloud. Think of it as Google Drive, but designed for things built with AI. <a href="https://github.com/signup" target="_blank">Create a free account →</a></span>
+      </div>
+      <div class="explainer-row">
+        <span class="explainer-label">Sacred Timeline</span>
+        <span class="explainer-def">A human-friendly layer on top of git. Instead of technical commands, you just say: capture, experiment, backup. Claude speaks it fluently. <a href="https://github.com/suhitanantula/sacred-timeline" target="_blank">See the project →</a></span>
+      </div>
+    </div>
 
     <div class="step">
       <div class="step-num">1</div>
