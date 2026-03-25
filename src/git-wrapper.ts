@@ -732,7 +732,7 @@ export class SacredTimeline {
             if (commits.length === 0) {
                 return {
                     success: true,
-                    summary: `No captures in the last ${days} days. Time to get back to work!`,
+                    summary: `No captures in the last ${days} days. The timeline has been quiet — a single capture is all it takes to get back on track.`,
                     stats: {
                         totalCaptures: 0,
                         activeDays: 0,
@@ -788,35 +788,61 @@ export class SacredTimeline {
             const activeDays = uniqueDates.size;
 
             // Build narrative summary
-            let summary = `In the last ${days} days, you made ${commits.length} capture${commits.length !== 1 ? 's' : ''}.`;
+            const lines: string[] = [];
 
-            if (busiestDay && busiestDay.captures > 1) {
-                summary += ` Your most productive day was ${busiestDay.day} with ${busiestDay.captures} captures.`;
+            // Opening line — scale tone to activity
+            if (commits.length === 1) {
+                lines.push(`One capture in the last ${days} days. A single nexus event — but it happened.`);
+            } else if (commits.length < 5) {
+                lines.push(`${commits.length} captures in the last ${days} days. The timeline is stirring.`);
+            } else if (commits.length < 20) {
+                lines.push(`${commits.length} captures in the last ${days} days. The Sacred Timeline is active.`);
+            } else {
+                lines.push(`${commits.length} captures in the last ${days} days. The TVA would be impressed.`);
             }
 
+            // Busiest day — include actual date
+            if (busiestDay && busiestDay.captures > 1) {
+                // Find the actual date for the busiest weekday
+                const busiestDate = commits
+                    .filter(c => new Date(c.date).toLocaleDateString('en-US', { weekday: 'long' }) === busiestDay!.day)
+                    .map(c => new Date(c.date))
+                    .sort((a, b) => b.getTime() - a.getTime())[0];
+                const dateStr = busiestDate
+                    ? busiestDate.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })
+                    : busiestDay.day;
+                lines.push(`Your biggest day was ${dateStr} — ${busiestDay.captures} captures, all locked into the timeline.`);
+            }
+
+            // Most worked file
             if (topFiles.length > 0) {
                 const topFile = topFiles[0];
-                summary += ` You worked most on "${topFile.file}" (${topFile.changes} change${topFile.changes !== 1 ? 's' : ''}).`;
+                lines.push(`You kept coming back to "${topFile.file}" — touched ${topFile.changes} time${topFile.changes !== 1 ? 's' : ''}.`);
             }
 
-            if (activeDays < days / 2) {
-                summary += ` You were active on ${activeDays} day${activeDays !== 1 ? 's' : ''} - consider more consistent capturing.`;
+            // Consistency — encouraging, not passive-aggressive
+            if (activeDays === 1) {
+                lines.push(`All your work landed on a single day. Big burst energy. Next time, spread the captures — the timeline remembers every session.`);
+            } else if (activeDays < days / 2) {
+                lines.push(`Active on ${activeDays} day${activeDays !== 1 ? 's' : ''}. Short runs are fine — just keep the timeline moving.`);
             }
 
-            // Look for recent milestones in commit messages
-            const recentMilestones = commits
-                .filter(c => c.message.toLowerCase().includes('finish') ||
-                            c.message.toLowerCase().includes('complete') ||
-                            c.message.toLowerCase().includes('done'))
-                .slice(0, 2);
-
-            if (recentMilestones.length > 0) {
-                summary += ` Recent milestones: "${recentMilestones[0].message}"`;
-                if (recentMilestones.length > 1) {
-                    summary += ` and "${recentMilestones[1].message}"`;
-                }
-                summary += '.';
+            // Last 3 capture messages — the actual story
+            const recentMessages = commits.slice(0, 3).map(c => c.message.trim()).filter(Boolean);
+            if (recentMessages.length > 0) {
+                lines.push(`\nMost recent captures:\n${recentMessages.map(m => `  → "${m}"`).join('\n')}`);
             }
+
+            // Closing line based on total captures
+            if (commits.length >= 20) {
+                lines.push(`\nThe Sacred Timeline is well protected. Keep building.`);
+            } else if (commits.length >= 5) {
+                lines.push(`\nGood momentum. Capture at the end of every session and nothing is ever lost.`);
+            } else {
+                lines.push(`\nEvery capture counts. The timeline remembers even when you don't.`);
+            }
+
+            const summary = lines.join(' ');
 
             return {
                 success: true,

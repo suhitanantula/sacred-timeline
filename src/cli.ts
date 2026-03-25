@@ -313,14 +313,14 @@ async function main() {
                 console.log(color.dim(`Analyzing the last ${days} days...\n`));
                 const result = await sacred.narrate(days);
 
-                console.log(color.bold('📖 Your Story:\n'));
+                console.log(color.bold(`📖 Your Story — last ${days} day${days !== 1 ? 's' : ''}:\n`));
                 console.log(result.summary);
                 console.log();
 
                 if (result.stats.topFiles.length > 0) {
-                    console.log(color.bold('Most Active Files:'));
+                    console.log(color.bold('Files you kept returning to:'));
                     result.stats.topFiles.forEach((f, i) => {
-                        console.log(color.dim(`  ${i + 1}.`) + ` ${f.file} ` + color.dim(`(${f.changes} changes)`));
+                        console.log(color.dim(`  ${i + 1}.`) + ` ${f.file} ` + color.dim(`(${f.changes} change${f.changes !== 1 ? 's' : ''})`));
                         console.log(color.dim(`     ${f.path}`));
                     });
                     console.log();
