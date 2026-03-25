@@ -27,7 +27,6 @@ if [ -d "$SKILL_DIR" ]; then
     # If running via curl (not from repo), fetch the skill file
     if [ ! -f "$SKILL_SRC" ]; then
         curl -fsSL https://raw.githubusercontent.com/suhitanantula/sacred-timeline/main/skills/sacred-timeline.md \
-
              -o "$SKILL_DIR/sacred-timeline.md"
     else
         cp "$SKILL_SRC" "$SKILL_DIR/sacred-timeline.md"

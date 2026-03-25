@@ -28,12 +28,12 @@ echo "REPO: $_REPO"
 
 **If `INSTALLED` is `no`:** Install sacred before continuing:
 ```bash
-npm install -g @suhitanantula/sacred-timeline
+npm install -g @suhit/sacred-timeline
 ```
 Then tell the user: "Installed Sacred Timeline. You can now use `sacred` commands."
 
 **If `VERSION` and `LATEST` are both known and differ:** Tell the user:
-> "Sacred Timeline v{VERSION} is installed. v{LATEST} is available. Run `/gstack-upgrade` or `npm install -g @suhitanantula/sacred-timeline` to upgrade."
+> "Sacred Timeline v{VERSION} is installed. v{LATEST} is available. Run `/gstack-upgrade` or `npm install -g @suhit/sacred-timeline` to upgrade."
 
 **If in a git repo (`REPO` is not `none`):** Run `sacred status` then **output the result as a formatted chat message** (not just inside the tool block — the user cannot see collapsed tool output). Format it like:
 
@@ -143,7 +143,7 @@ If the user is clearly a developer (uses git terms, asks about branches, diffs),
 
 To upgrade Sacred Timeline to the latest version:
 ```bash
-npm install -g @suhitanantula/sacred-timeline
+npm install -g @suhit/sacred-timeline
 ```
 
 Or run `/gstack-upgrade` if gstack is installed.

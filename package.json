@@ -1,9 +1,13 @@
 {
   "name": "@suhit/sacred-timeline",
   "displayName": "Sacred Timeline",
-  "description": "Git for humans: Innovation architecture for the AI age",
-  "version": "1.1.1",
-  "publisher": "helix-mind",
+  "description": "Git for humans: Innovation architecture for the AI age. Capture your work, protect your progress, travel through time — no coding required.",
+  "version": "1.1.2",
+  "author": {
+    "name": "Suhit Anantula",
+    "url": "https://www.suhitanantula.com"
+  },
+  "publisher": "suhitanantula",
   "engines": {
     "vscode": "^1.85.0"
   },
