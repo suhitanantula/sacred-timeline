@@ -216,6 +216,7 @@ In the AI age, everyone builds iteratively. The tools should match.
 ## Related
 
 - [Sacred Timeline for Obsidian](https://github.com/suhitanantula/sacred-timeline-obsidian) — Plugin for Obsidian vaults
+- [Marketing kit](docs/marketing/README.md) — Demo script, starter prompts, and landing page copy for explaining Sacred Timeline as the safety layer for AI-built work
 
 ## Development
 
