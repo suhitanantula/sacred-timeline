@@ -11,6 +11,11 @@ CHROME="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 FFMPEG="${FFMPEG:-ffmpeg}"
 FFPROBE="${FFPROBE:-ffprobe}"
 SAY="${SAY:-say}"
+AUDIO_PROVIDER="${AUDIO_PROVIDER:-auto}"
+OPENAI_TTS_MODEL="${OPENAI_TTS_MODEL:-gpt-4o-mini-tts}"
+OPENAI_TTS_VOICE="${OPENAI_TTS_VOICE:-marin}"
+ELEVENLABS_MODEL="${ELEVENLABS_MODEL:-eleven_multilingual_v2}"
+ELEVENLABS_VOICE_ID="${ELEVENLABS_VOICE_ID:-JBFqnCBsd6RMkjVDRZzb}"
 SLIDE_DURATION="7.5"
 SLIDE_COUNT="12"
 WIDTH="1920"
@@ -49,11 +54,71 @@ printf "file '%s/scene-%02d.png'\n" "$FRAME_DIR" $((SLIDE_COUNT - 1)) >> "$OUTPU
   -crf 20 \
   "$OUTPUT_DIR/sacred-timeline-demo-silent.mp4"
 
-"$SAY" -v Daniel -r 170 -o "$OUTPUT_DIR/voiceover.aiff" -f "$VOICEOVER"
+VOICE_AUDIO="$OUTPUT_DIR/voiceover.aiff"
+
+if { [ "$AUDIO_PROVIDER" = "openai" ] || [ "$AUDIO_PROVIDER" = "auto" ]; } && [ -n "${OPENAI_API_KEY:-}" ]; then
+  VOICE_AUDIO="$OUTPUT_DIR/voiceover-openai.mp3"
+  OPENAI_PAYLOAD="$OUTPUT_DIR/openai-speech.json"
+  VOICEOVER="$VOICEOVER" OPENAI_PAYLOAD="$OPENAI_PAYLOAD" OPENAI_TTS_MODEL="$OPENAI_TTS_MODEL" OPENAI_TTS_VOICE="$OPENAI_TTS_VOICE" python3 - <<'PY'
+import json
+import os
+
+with open(os.environ["VOICEOVER"], "r", encoding="utf-8") as f:
+    text = f.read().strip()
+
+payload = {
+    "model": os.environ["OPENAI_TTS_MODEL"],
+    "voice": os.environ["OPENAI_TTS_VOICE"],
+    "input": text,
+    "instructions": "Warm, confident product narrator. Clear pacing, understated energy, no hype. Sound like a senior operator explaining a useful tool to AI-native consultants and founders.",
+    "response_format": "mp3",
+}
+
+with open(os.environ["OPENAI_PAYLOAD"], "w", encoding="utf-8") as f:
+    json.dump(payload, f)
+PY
+  curl -fsS https://api.openai.com/v1/audio/speech \
+    -H "Authorization: Bearer $OPENAI_API_KEY" \
+    -H "Content-Type: application/json" \
+    -d @"$OPENAI_PAYLOAD" \
+    --output "$VOICE_AUDIO"
+elif { [ "$AUDIO_PROVIDER" = "elevenlabs" ] || [ "$AUDIO_PROVIDER" = "auto" ]; } && { [ -n "${ELEVENLABS_API_KEY:-}" ] || [ -n "${ELEVEN_API_KEY:-}" ]; }; then
+  VOICE_AUDIO="$OUTPUT_DIR/voiceover-elevenlabs.mp3"
+  ELEVENLABS_PAYLOAD="$OUTPUT_DIR/elevenlabs-speech.json"
+  ELEVENLABS_KEY="${ELEVENLABS_API_KEY:-${ELEVEN_API_KEY:-}}"
+  VOICEOVER="$VOICEOVER" ELEVENLABS_PAYLOAD="$ELEVENLABS_PAYLOAD" ELEVENLABS_MODEL="$ELEVENLABS_MODEL" python3 - <<'PY'
+import json
+import os
+
+with open(os.environ["VOICEOVER"], "r", encoding="utf-8") as f:
+    text = f.read().strip()
+
+payload = {
+    "text": text,
+    "model_id": os.environ["ELEVENLABS_MODEL"],
+    "voice_settings": {
+        "stability": 0.55,
+        "similarity_boost": 0.75,
+        "style": 0.25,
+        "use_speaker_boost": True,
+    },
+}
+
+with open(os.environ["ELEVENLABS_PAYLOAD"], "w", encoding="utf-8") as f:
+    json.dump(payload, f)
+PY
+  curl -fsS "https://api.elevenlabs.io/v1/text-to-speech/$ELEVENLABS_VOICE_ID?output_format=mp3_44100_128" \
+    -H "xi-api-key: $ELEVENLABS_KEY" \
+    -H "Content-Type: application/json" \
+    -d @"$ELEVENLABS_PAYLOAD" \
+    --output "$VOICE_AUDIO"
+else
+  "$SAY" -v Daniel -r 170 -o "$VOICE_AUDIO" -f "$VOICEOVER"
+fi
 
 "$FFMPEG" -y \
   -i "$OUTPUT_DIR/sacred-timeline-demo-silent.mp4" \
-  -i "$OUTPUT_DIR/voiceover.aiff" \
+  -i "$VOICE_AUDIO" \
   -filter_complex "[1:a]apad,atrim=0:${VIDEO_SECONDS},afade=t=out:st=87:d=3[a]" \
   -t "$VIDEO_SECONDS" \
   -map 0:v \

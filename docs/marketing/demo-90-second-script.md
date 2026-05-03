@@ -4,7 +4,7 @@
 
 Show one thing clearly:
 
-> Sacred Timeline lets a non-developer build with an AI agent without losing the working version, the story, or the ability to recover.
+> Sacred Timeline lets people build with AI agents without losing the working version, the story, or the ability to recover.
 
 Rendered assets:
 
@@ -34,7 +34,7 @@ Rendered assets:
 
 Voiceover:
 
-> AI agents can change a project faster than most people can understand it. That is powerful, but it creates a new problem: you lose the trail. What changed? What still works? How do you go back?
+> You do not start by thinking you need version control. You start with a simpler problem: an AI agent just changed your project, and now you are not sure what changed, what still works, or whether you can safely try another direction.
 
 Screen:
 
@@ -72,7 +72,7 @@ sacred capture "improve the proposal landing page"
 
 Voiceover:
 
-> When the agent makes useful progress, I capture the moment in plain English. Underneath, Sacred Timeline is using git, but I never need to think in git commands.
+> When the agent makes useful progress, I capture the moment in plain English. I do not need to understand the machinery underneath. I just need to know the work is protected.
 
 Screen moment:
 
@@ -147,4 +147,4 @@ Final line:
 
 ## Short Social Cut
 
-> AI agents move fast. Sacred Timeline gives you checkpoints, experiments, rollback, backup, and a plain-English story of what changed. It is not git for developers. It is the safety layer for people building with AI.
+> AI agents move fast. Sacred Timeline gives you checkpoints, experiments, rollback, backup, and a plain-English story of what changed. It is the safety layer for people building with AI.

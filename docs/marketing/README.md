@@ -26,6 +26,23 @@ Target people already letting AI agents touch real work:
 - [Starter prompts](starter-prompts.md)
 - [Landing page copy](landing-page.md)
 
+## Voiceover Rendering
+
+The demo renderer supports three voiceover paths:
+
+```bash
+# Best default when an OpenAI key is available
+OPENAI_API_KEY=... AUDIO_PROVIDER=openai ./docs/marketing/demo/render-demo.sh
+
+# ElevenLabs option when a voice ID is available
+ELEVENLABS_API_KEY=... ELEVENLABS_VOICE_ID=... AUDIO_PROVIDER=elevenlabs ./docs/marketing/demo/render-demo.sh
+
+# Local fallback
+AUDIO_PROVIDER=say ./docs/marketing/demo/render-demo.sh
+```
+
+When using AI-generated voiceover, disclose that the narration is AI-generated wherever the video is published.
+
 ## Best First CTA
 
 > Before this AI agent changes anything, protect the project with Sacred Timeline.

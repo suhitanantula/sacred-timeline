@@ -1,18 +1,18 @@
-AI agents can change a project faster than you can understand it.
+You do not start by thinking you need version control.
 
-That is powerful, but it creates a new problem. What changed? What still works? How do you go back?
+You start with a simpler problem. An AI agent just changed your project, and now you are not sure what changed, what still works, or whether you can safely try another direction.
 
 Sacred Timeline is the safety layer for AI-built work.
 
-Before the agent changes anything, run sacred doctor. It checks whether the project is protected, connected to cloud, in sync, and ready for an agent session.
+Before the agent changes anything, run sacred doctor. It checks whether this folder is protected, connected to cloud, in sync, and ready for an agent session.
 
-Then run sacred status. Instead of raw git language, you get a simple answer: are we on the main timeline, are there changes, and is the work backed up?
+Then run sacred status. You get a simple answer: are we on the working timeline, are there unsaved changes, and is the work backed up?
 
 When the agent makes progress, run sacred changes. You can see what moved before you save it.
 
 Then capture the moment in plain English.
 
-No commit flags. No git jargon. Just describe what the agent built.
+No developer commands. No technical ceremony. Just describe what the agent built.
 
 When you want to try something risky, start an experiment. The working version stays safe while the agent explores a bold direction.
 
@@ -24,6 +24,8 @@ Then back it up to cloud.
 
 That is the loop: check, capture, experiment, keep or discard, narrate, and backup.
 
-Sacred Timeline is not git for non-developers. It is project safety for people building with AI.
+Sacred Timeline is for vibe coders, consultants, founders, writers, and knowledge workers who are letting AI agents touch real work.
+
+You do not need to know the machinery underneath. You just need to know the work is protected.
 
 Before the agent changes anything, protect the timeline.
