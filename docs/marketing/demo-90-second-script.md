@@ -6,6 +6,14 @@ Show one thing clearly:
 
 > Sacred Timeline lets a non-developer build with an AI agent without losing the working version, the story, or the ability to recover.
 
+Rendered assets:
+
+- Final video: [demo/output/sacred-timeline-90-second-demo.mp4](demo/output/sacred-timeline-90-second-demo.mp4)
+- Contact sheet: [demo/output/contact-sheet.jpg](demo/output/contact-sheet.jpg)
+- Storyboard source: [demo/storyboard.html](demo/storyboard.html)
+- Voiceover source: [demo/voiceover.txt](demo/voiceover.txt)
+- Render script: [demo/render-demo.sh](demo/render-demo.sh)
+
 ## Audience
 
 - AI-native consultants, strategists, and operators

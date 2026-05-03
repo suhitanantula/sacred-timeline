@@ -19,6 +19,10 @@ Target people already letting AI agents touch real work:
 ## Assets
 
 - [90-second demo script](demo-90-second-script.md)
+- [Rendered 90-second demo video](demo/output/sacred-timeline-90-second-demo.mp4)
+- [Demo storyboard source](demo/storyboard.html)
+- [Demo voiceover script](demo/voiceover.txt)
+- [Demo render script](demo/render-demo.sh)
 - [Starter prompts](starter-prompts.md)
 - [Landing page copy](landing-page.md)
 

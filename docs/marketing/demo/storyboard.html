@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sacred Timeline 90 Second Demo</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #080b10;
+      --panel: #10141d;
+      --panel-strong: #161b26;
+      --text: #f3f5f0;
+      --muted: #a8b0a8;
+      --soft: #cdd4cc;
+      --gold: #c8a96e;
+      --teal: #49b6a8;
+      --line: rgba(255, 255, 255, 0.14);
+      --danger: #ef8d7b;
+      --green: #78d69e;
+    }
+
+    body {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .slide {
+      width: 100vw;
+      height: 100vh;
+      display: none;
+      position: relative;
+      isolation: isolate;
+      padding: 72px;
+      overflow: hidden;
+    }
+
+    .slide.active {
+      display: grid;
+    }
+
+    .image-bg::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -2;
+      background:
+        linear-gradient(90deg, rgba(8, 11, 16, 0.98), rgba(8, 11, 16, 0.74), rgba(8, 11, 16, 0.18)),
+        linear-gradient(0deg, rgba(8, 11, 16, 0.96), rgba(8, 11, 16, 0.2)),
+        url("../../assets/sacred-timeline.jpg") center right / cover no-repeat;
+    }
+
+    .content {
+      max-width: 980px;
+      align-self: end;
+      z-index: 2;
+    }
+
+    .center {
+      align-self: center;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      min-height: 34px;
+      align-items: center;
+      padding: 0 12px;
+      color: var(--gold);
+      border: 1px solid rgba(200, 169, 110, 0.46);
+      font-size: 16px;
+      font-weight: 850;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+    }
+
+    h1 {
+      font-size: 92px;
+      line-height: 0.96;
+      letter-spacing: 0;
+      max-width: 980px;
+      margin-bottom: 28px;
+    }
+
+    h2 {
+      font-size: 70px;
+      line-height: 1.02;
+      letter-spacing: 0;
+      max-width: 1020px;
+      margin-bottom: 24px;
+    }
+
+    p {
+      color: var(--soft);
+      font-size: 34px;
+      line-height: 1.25;
+      max-width: 900px;
+    }
+
+    .caption {
+      position: absolute;
+      left: 72px;
+      bottom: 52px;
+      color: var(--muted);
+      font-size: 24px;
+    }
+
+    .brand {
+      position: absolute;
+      right: 72px;
+      bottom: 52px;
+      color: var(--gold);
+      font-size: 22px;
+      font-weight: 850;
+    }
+
+    .layout-two {
+      grid-template-columns: 0.95fr 1.05fr;
+      gap: 56px;
+      align-items: center;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      background: rgba(16, 20, 29, 0.94);
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.28);
+    }
+
+    .panel-head {
+      min-height: 54px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 18px;
+      background: var(--panel-strong);
+      border-bottom: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--danger);
+    }
+
+    .dot:nth-child(2) {
+      background: #e6bf6b;
+    }
+
+    .dot:nth-child(3) {
+      background: var(--green);
+    }
+
+    .terminal {
+      padding: 28px;
+      font: 26px/1.55 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      color: #d7dfd6;
+      white-space: pre-wrap;
+      min-height: 430px;
+    }
+
+    .terminal .cmd {
+      color: #8be1d4;
+    }
+
+    .terminal .ok {
+      color: var(--green);
+    }
+
+    .terminal .warn {
+      color: #e8c878;
+    }
+
+    .terminal .dim {
+      color: #7f897f;
+    }
+
+    .agent-shot {
+      width: 100%;
+      display: block;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      margin-top: 42px;
+      max-width: 1120px;
+    }
+
+    .card {
+      min-height: 220px;
+      padding: 28px;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      border-radius: 10px;
+    }
+
+    .card strong {
+      display: block;
+      font-size: 30px;
+      margin-bottom: 14px;
+      color: var(--text);
+    }
+
+    .card span {
+      color: var(--muted);
+      font-size: 23px;
+      line-height: 1.25;
+    }
+
+    .timeline {
+      width: 100%;
+      height: 10px;
+      background: rgba(255, 255, 255, 0.12);
+      position: absolute;
+      left: 0;
+      top: 0;
+    }
+
+    .timeline span {
+      display: block;
+      height: 100%;
+      width: var(--progress);
+      background: linear-gradient(90deg, var(--gold), var(--teal));
+    }
+
+    .prompt {
+      padding: 30px;
+      font-size: 28px;
+      line-height: 1.42;
+      color: var(--soft);
+    }
+
+    .prompt strong {
+      color: var(--text);
+    }
+  </style>
+</head>
+<body>
+  <section class="slide image-bg" data-slide="0" style="--progress: 8.33%;">
+    <div class="timeline"><span></span></div>
+    <div class="content center">
+      <div class="eyebrow">Sacred Timeline</div>
+      <h1>Build with AI without losing the plot.</h1>
+      <p>The safety layer for AI-built work: checkpoints, experiments, rollback, backup, and a plain-English story.</p>
+    </div>
+    <div class="brand">sacred-timeline</div>
+  </section>
+
+  <section class="slide layout-two" data-slide="1" style="--progress: 16.66%;">
+    <div class="timeline"><span></span></div>
+    <div class="content center">
+      <div class="eyebrow">The problem</div>
+      <h2>AI agents move faster than your memory.</h2>
+      <p>Files change. Versions blur. The working state becomes hard to explain.</p>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><span class="dot"></span><span class="dot"></span><span class="dot"></span> agent session</div>
+      <img class="agent-shot" src="../../assets/claude-code-demo.png" alt="Agent session">
+    </div>
+    <div class="brand">sacred-timeline</div>
+  </section>
+
+  <section class="slide layout-two" data-slide="2" style="--progress: 24.99%;">
+    <div class="timeline"><span></span></div>
+    <div class="content center">
+      <div class="eyebrow">Step 1</div>
+      <h2>Check the project before changing anything.</h2>
+      <p>An agent can inspect setup, cloud backup, sync state, and installed skills.</p>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><span class="dot"></span><span class="dot"></span><span class="dot"></span> terminal</div>
+      <div class="terminal"><span class="cmd">$ sacred doctor</span>
+<span class="ok">✓</span> node: v22.17.0
+<span class="ok">✓</span> git: ready
+<span class="ok">✓</span> timeline: active
+<span class="ok">✓</span> cloud-connection: origin
+<span class="ok">✓</span> sync: ahead=0, behind=0
+<span class="ok">✓</span> codex-skill: installed
+<span class="ok">✓</span> claude-skill: installed</div>
+    </div>
+    <div class="brand">sacred-timeline</div>
+  </section>
+
+  <section class="slide layout-two" data-slide="3" style="--progress: 33.32%;">
+    <div class="timeline"><span></span></div>
+    <div class="content center">
+      <div class="eyebrow">Step 2</div>
+      <h2>Know whether the working version is safe.</h2>
+      <p>Plain language replaces raw git state.</p>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><span class="dot"></span><span class="dot"></span><span class="dot"></span> terminal</div>
+      <div class="terminal"><span class="cmd">$ sacred status</span>
+
+Sacred Timeline Status:
+
+<span class="ok">●</span> On main timeline
+<span class="ok">✓</span> No uncommitted changes
+<span class="ok">☁</span> In sync with cloud</div>
+    </div>
+    <div class="brand">sacred-timeline</div>
+  </section>
+
+  <section class="slide layout-two" data-slide="4" style="--progress: 41.65%;">
+    <div class="timeline"><span></span></div>
+    <div class="content center">
+      <div class="eyebrow">Step 3</div>
+      <h2>Let the AI agent work.</h2>
+      <p>When something useful changes, Sacred Timeline can show the difference before you save it.</p>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><span class="dot"></span><span class="dot"></span><span class="dot"></span> terminal</div>
+      <div class="terminal"><span class="cmd">$ sacred changes</span>
+
+Changes:
+
+New files:
+  + docs/marketing/starter-prompts.md
+
+Modified:
+  ~ docs/index.html
+
+<span class="dim">Summary: 1 modified, 1 new</span></div>
+    </div>
+    <div class="brand">sacred-timeline</div>
+  </section>
+
+  <section class="slide layout-two" data-slide="5" style="--progress: 49.98%;">
+    <div class="timeline"><span></span></div>
+    <div class="content center">
+      <div class="eyebrow">Step 4</div>
+      <h2>Capture the useful moment in plain English.</h2>
+      <p>No commit flags. No git jargon. Just describe what changed.</p>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><span class="dot"></span><span class="dot"></span><span class="dot"></span> terminal</div>
+      <div class="terminal"><span class="cmd">$ sacred capture "create AI work safety landing page"</span>
+
+<span class="ok">📸</span> Captured:
+"create AI work safety landing page"
+
+<span class="dim">The working moment is now protected.</span></div>
+    </div>
+    <div class="brand">sacred-timeline</div>
+  </section>
+
+  <section class="slide layout-two" data-slide="6" style="--progress: 58.31%;">
+    <div class="timeline"><span></span></div>
+    <div class="content center">
+      <div class="eyebrow">Step 5</div>
+      <h2>Try the risky idea safely.</h2>
+      <p>Experiments let the agent explore without breaking the working version.</p>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><span class="dot"></span><span class="dot"></span><span class="dot"></span> terminal</div>
+      <div class="terminal"><span class="cmd">$ sacred experiment "bolder-demo"</span>
+
+<span class="ok">🧪</span> Experiment "bolder-demo" started.
+
+You are now on a safe branch.
+
+<span class="dim">Main timeline remains protected.</span></div>
+    </div>
+    <div class="brand">sacred-timeline</div>
+  </section>
+
+  <section class="slide" data-slide="7" style="--progress: 66.64%;">
+    <div class="timeline"><span></span></div>
+    <div class="content center">
+      <div class="eyebrow">Decision point</div>
+      <h2>Keep what works. Discard what does not.</h2>
+      <div class="cards">
+        <div class="card">
+          <strong>It worked</strong>
+          <span>Run <code>sacred keep</code> and the experiment joins the main timeline.</span>
+        </div>
+        <div class="card">
+          <strong>It failed</strong>
+          <span>Run <code>sacred discard</code> and the working version stays safe.</span>
+        </div>
+        <div class="card">
+          <strong>You are unsure</strong>
+          <span>Ask the agent to explain the change before deciding.</span>
+        </div>
+      </div>
+    </div>
+    <div class="brand">sacred-timeline</div>
+  </section>
+
+  <section class="slide layout-two" data-slide="8" style="--progress: 74.97%;">
+    <div class="timeline"><span></span></div>
+    <div class="content center">
+      <div class="eyebrow">Step 6</div>
+      <h2>Turn the session into a story.</h2>
+      <p>Sacred Timeline explains what happened in language a client, founder, or teammate can understand.</p>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><span class="dot"></span><span class="dot"></span><span class="dot"></span> terminal</div>
+      <div class="terminal"><span class="cmd">$ sacred narrate 7</span>
+
+Your Story - last 7 days:
+
+You created the agent-native safety layer, added setup checks, built marketing assets, and captured the demo workflow.
+
+Most recent captures:
+  - Reposition as safety layer
+  - Add Codex plugin surface
+  - Create starter prompts</div>
+    </div>
+    <div class="brand">sacred-timeline</div>
+  </section>
+
+  <section class="slide layout-two" data-slide="9" style="--progress: 83.3%;">
+    <div class="timeline"><span></span></div>
+    <div class="content center">
+      <div class="eyebrow">Step 7</div>
+      <h2>Back it up to cloud.</h2>
+      <p>The protected timeline goes to GitHub so another machine or agent can continue from the same story.</p>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><span class="dot"></span><span class="dot"></span><span class="dot"></span> terminal</div>
+      <div class="terminal"><span class="cmd">$ sacred backup</span>
+
+Backing up to cloud...
+
+<span class="ok">☁</span> Backed up!
+1 capture sent to cloud.</div>
+    </div>
+    <div class="brand">sacred-timeline</div>
+  </section>
+
+  <section class="slide" data-slide="10" style="--progress: 91.63%;">
+    <div class="timeline"><span></span></div>
+    <div class="content center">
+      <div class="eyebrow">What changed?</div>
+      <h2>It is not git for non-developers. It is project safety for AI work.</h2>
+      <div class="cards">
+        <div class="card">
+          <strong>Checkpoints</strong>
+          <span>Save meaningful moments as the agent works.</span>
+        </div>
+        <div class="card">
+          <strong>Experiments</strong>
+          <span>Try bold changes without risking the working version.</span>
+        </div>
+        <div class="card">
+          <strong>Memory</strong>
+          <span>Know what changed, why it changed, and what is backed up.</span>
+        </div>
+      </div>
+    </div>
+    <div class="brand">sacred-timeline</div>
+  </section>
+
+  <section class="slide image-bg" data-slide="11" style="--progress: 100%;">
+    <div class="timeline"><span></span></div>
+    <div class="content center">
+      <div class="eyebrow">Start here</div>
+      <h1>Before the agent changes anything, protect the timeline.</h1>
+      <div class="panel" style="max-width: 950px;">
+        <div class="panel-head"><span class="dot"></span><span class="dot"></span><span class="dot"></span> starter prompt</div>
+        <div class="prompt"><strong>Before we change this project, I want to protect it with Sacred Timeline.</strong><br><br>Run <code>sacred doctor</code>, run <code>sacred status</code>, and tell me whether this project is safe to change.</div>
+      </div>
+    </div>
+    <div class="brand">sacred-timeline</div>
+  </section>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const requested = params.get("slide") || "0";
+    const slides = Array.from(document.querySelectorAll(".slide"));
+    const active = slides.find((slide) => slide.dataset.slide === requested) || slides[0];
+    active.classList.add("active");
+  </script>
+</body>
+</html>
