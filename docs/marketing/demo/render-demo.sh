@@ -16,6 +16,7 @@ OPENAI_TTS_MODEL="${OPENAI_TTS_MODEL:-gpt-4o-mini-tts}"
 OPENAI_TTS_VOICE="${OPENAI_TTS_VOICE:-marin}"
 ELEVENLABS_MODEL="${ELEVENLABS_MODEL:-eleven_multilingual_v2}"
 ELEVENLABS_VOICE_ID="${ELEVENLABS_VOICE_ID:-JBFqnCBsd6RMkjVDRZzb}"
+AUDIO_TEMPO="${AUDIO_TEMPO:-auto}"
 SLIDE_DURATION="7.5"
 SLIDE_COUNT="12"
 WIDTH="1920"
@@ -116,10 +117,23 @@ else
   "$SAY" -v Daniel -r 170 -o "$VOICE_AUDIO" -f "$VOICEOVER"
 fi
 
+if [ "$AUDIO_TEMPO" = "auto" ]; then
+  AUDIO_DURATION="$("$FFPROBE" -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "$VOICE_AUDIO")"
+  AUDIO_TEMPO="$(AUDIO_DURATION="$AUDIO_DURATION" VIDEO_SECONDS="$VIDEO_SECONDS" python3 - <<'PY'
+import os
+
+duration = float(os.environ["AUDIO_DURATION"])
+target = float(os.environ["VIDEO_SECONDS"]) - 1.0
+tempo = max(1.0, min(1.25, duration / target))
+print(f"{tempo:.4f}")
+PY
+)"
+fi
+
 "$FFMPEG" -y \
   -i "$OUTPUT_DIR/sacred-timeline-demo-silent.mp4" \
   -i "$VOICE_AUDIO" \
-  -filter_complex "[1:a]apad,atrim=0:${VIDEO_SECONDS},afade=t=out:st=87:d=3[a]" \
+  -filter_complex "[1:a]atempo=${AUDIO_TEMPO},apad,atrim=0:${VIDEO_SECONDS},afade=t=out:st=87:d=3[a]" \
   -t "$VIDEO_SECONDS" \
   -map 0:v \
   -map "[a]" \

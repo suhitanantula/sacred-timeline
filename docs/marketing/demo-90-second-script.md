@@ -36,12 +36,14 @@ Voiceover:
 
 > You do not start by thinking you need version control. You start with a simpler problem: an AI agent just changed your project, and now you are not sure what changed, what still works, or whether you can safely try another direction.
 
+> The thing that solves this is git. Git gives you history, rollback, safe branches, and cloud backup. But if you are a vibe coder, consultant, founder, writer, or knowledge worker, git can feel like a foreign language. Sacred Timeline is for you. It gives you the approach and language to work with git without the confusion.
+
 Screen:
 
 - Show the project folder.
 - Show the agent about to make changes.
 
-### 0:10-0:25 - The Safety Check
+### 0:10-0:25 - The Bridge and Safety Check
 
 Action:
 
@@ -135,7 +137,7 @@ Voiceover:
 
 Final line:
 
-> Sacred Timeline: build with AI without losing the plot.
+> Sacred Timeline: the power of git, in the language of ordinary work.
 
 ## On-Screen Captions
 

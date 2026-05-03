@@ -2,7 +2,11 @@ You do not start by thinking you need version control.
 
 You start with a simpler problem. An AI agent just changed your project, and now you are not sure what changed, what still works, or whether you can safely try another direction.
 
-Sacred Timeline is the safety layer for AI-built work.
+The thing that solves this is git. Git gives you history, rollback, safe branches, and cloud backup.
+
+But if you are a vibe coder, consultant, founder, writer, or knowledge worker, git can feel like a foreign language.
+
+Sacred Timeline is for you. It gives you the approach and language to work with git without the confusion.
 
 Before the agent changes anything, run sacred doctor. It checks whether this folder is protected, connected to cloud, in sync, and ready for an agent session.
 
@@ -24,8 +28,6 @@ Then back it up to cloud.
 
 That is the loop: check, capture, experiment, keep or discard, narrate, and backup.
 
-Sacred Timeline is for vibe coders, consultants, founders, writers, and knowledge workers who are letting AI agents touch real work.
-
-You do not need to know the machinery underneath. You just need to know the work is protected.
+Underneath, Sacred Timeline is using git. On the surface, you get a human workflow for protecting AI-built work.
 
 Before the agent changes anything, protect the timeline.
