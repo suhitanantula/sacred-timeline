@@ -1,0 +1,40 @@
+{
+  "name": "sacred-timeline",
+  "version": "1.1.7",
+  "description": "Git for humans: capture work, protect progress, run safe experiments, and back up to cloud using plain language.",
+  "author": {
+    "name": "Suhit Anantula",
+    "url": "https://www.suhitanantula.com"
+  },
+  "homepage": "https://suhitanantula.github.io/sacred-timeline",
+  "repository": "https://github.com/suhitanantula/sacred-timeline",
+  "license": "MIT",
+  "keywords": [
+    "git",
+    "version-control",
+    "knowledge-work",
+    "coding-agents",
+    "non-developers",
+    "ai-workflow"
+  ],
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
+  "interface": {
+    "displayName": "Sacred Timeline",
+    "shortDescription": "Git for humans inside coding agents.",
+    "longDescription": "Sacred Timeline wraps git in plain language for non-developers and AI-native knowledge workers. Agents can capture milestones, show changes, narrate progress, run safe experiments, and back up work without exposing raw git commands.",
+    "developerName": "Suhit Anantula",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
+    "websiteURL": "https://suhitanantula.github.io/sacred-timeline",
+    "defaultPrompt": [
+      "Check my Sacred Timeline status.",
+      "Capture this milestone in plain English.",
+      "Tell me the story of recent work."
+    ],
+    "brandColor": "#0F766E"
+  }
+}

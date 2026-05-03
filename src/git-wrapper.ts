@@ -659,6 +659,34 @@ export class SacredTimeline {
     }
 
     /**
+     * Get the configured remote URLs for agent diagnostics.
+     */
+    async getRemotes(): Promise<{ name: string; fetch?: string; push?: string }[]> {
+        try {
+            const remotes = await this.git.getRemotes(true);
+            return remotes.map(remote => ({
+                name: remote.name,
+                fetch: remote.refs.fetch,
+                push: remote.refs.push
+            }));
+        } catch {
+            return [];
+        }
+    }
+
+    /**
+     * Get the current timeline branch name.
+     */
+    async getCurrentBranch(): Promise<string | null> {
+        try {
+            const status = await this.git.status();
+            return status.current || null;
+        } catch {
+            return null;
+        }
+    }
+
+    /**
      * Check if this is a git repository
      */
     async isRepository(): Promise<boolean> {

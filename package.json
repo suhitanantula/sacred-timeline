@@ -35,12 +35,15 @@
     "out",
     "README.md",
     "skills",
+    ".codex-plugin",
+    ".mcp.json",
     "install.sh",
     "loki-sacred-timeline.jpg"
   ],
   "main": "./out/extension.js",
   "bin": {
-    "sacred": "out/cli.js"
+    "sacred": "out/cli.js",
+    "sacred-mcp": "out/mcp-server.js"
   },
   "contributes": {
     "commands": [

@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "sacred-timeline": {
+      "command": "sacred-mcp",
+      "args": []
+    }
+  }
+}

@@ -5,6 +5,10 @@
  */
 
 import { SacredTimeline } from './git-wrapper';
+import { execSync } from 'child_process';
+import * as fs from 'fs';
+import * as path from 'path';
+import * as os from 'os';
 
 const color = {
     bold: (s: string) => `\x1b[1m${s}\x1b[0m`,
@@ -122,6 +126,7 @@ ${color.dim('Commands:')}
   ${color.green('start')}                Begin fresh project (git init)
   ${color.green('connect')} <url>        Link to cloud (add remote)
   ${color.green('status')}               Show current state
+  ${color.green('doctor')}               Check Sacred Timeline setup
   ${color.green('init-shell')}           Setup auto-status on cd (add to .zshrc)
 
 ${color.dim('Examples:')}
@@ -130,13 +135,172 @@ ${color.dim('Examples:')}
   sacred narrate
   sacred narrate 30
   sacred timeline
+  sacred status --json
 `;
+}
+
+function printJson(value: unknown): void {
+    console.log(JSON.stringify(value, null, 2));
+}
+
+function getCommandOutput(command: string): string | null {
+    try {
+        return execSync(command, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim();
+    } catch {
+        return null;
+    }
+}
+
+function getInstalledVersion(): string {
+    try {
+        const globalRoot = execSync('npm root -g', { encoding: 'utf8' }).trim();
+        const packagePaths = [
+            path.join(globalRoot, '@suhit/sacred-timeline/package.json'),
+            path.join(globalRoot, 'sacred-timeline/package.json')
+        ];
+        for (const packagePath of packagePaths) {
+            if (fs.existsSync(packagePath)) {
+                const pkg = JSON.parse(fs.readFileSync(packagePath, 'utf8'));
+                return pkg.version || 'unknown';
+            }
+        }
+    } catch {
+        // Fall through to unknown.
+    }
+    return 'unknown';
+}
+
+async function buildStatusPayload(sacred: SacredTimeline): Promise<unknown> {
+    const status = await sacred.getStatusSummary();
+    const changes = await sacred.changes();
+    const branch = await sacred.getCurrentBranch();
+    const remotes = await sacred.getRemotes();
+    return {
+        isRepo: status.isRepo,
+        branch,
+        currentExperiment: status.currentExperiment,
+        changes,
+        aheadOfCloud: status.aheadOfCloud,
+        behindCloud: status.behindCloud,
+        hasConflicts: status.hasConflicts,
+        connected: remotes.length > 0,
+        remotes
+    };
+}
+
+async function buildDoctorPayload(sacred: SacredTimeline, cwd: string): Promise<{
+    ok: boolean;
+    checks: { name: string; ok: boolean; detail: string }[];
+    recommendations: string[];
+}> {
+    const checks: { name: string; ok: boolean; detail: string }[] = [];
+    const recommendations: string[] = [];
+
+    const nodeVersion = getCommandOutput('node --version');
+    checks.push({
+        name: 'node',
+        ok: Boolean(nodeVersion),
+        detail: nodeVersion || 'Node.js not found'
+    });
+
+    const npmVersion = getCommandOutput('npm --version');
+    checks.push({
+        name: 'npm',
+        ok: Boolean(npmVersion),
+        detail: npmVersion || 'npm not found'
+    });
+
+    const gitVersion = getCommandOutput('git --version');
+    checks.push({
+        name: 'git',
+        ok: Boolean(gitVersion),
+        detail: gitVersion || 'git not found'
+    });
+
+    const sacredPath = getCommandOutput('command -v sacred');
+    checks.push({
+        name: 'sacred-cli',
+        ok: Boolean(sacredPath),
+        detail: sacredPath || 'sacred command not found on PATH'
+    });
+
+    checks.push({
+        name: 'sacred-version',
+        ok: getInstalledVersion() !== 'unknown',
+        detail: getInstalledVersion()
+    });
+
+    const isRepo = await sacred.isRepository();
+    checks.push({
+        name: 'timeline',
+        ok: isRepo,
+        detail: isRepo ? `Sacred Timeline active in ${cwd}` : 'Not a git-backed timeline yet'
+    });
+    if (!isRepo) {
+        recommendations.push('Run `sacred start` in this folder to begin a timeline.');
+    }
+
+    if (isRepo) {
+        const status = await sacred.getStatusSummary();
+        const remotes = await sacred.getRemotes();
+        checks.push({
+            name: 'cloud-connection',
+            ok: remotes.length > 0,
+            detail: remotes.length > 0 ? remotes.map(remote => remote.name).join(', ') : 'No cloud remote configured'
+        });
+        if (remotes.length === 0) {
+            recommendations.push('Run `sacred connect <github-url>` to connect this timeline to cloud backup.');
+        }
+
+        checks.push({
+            name: 'sync',
+            ok: status.aheadOfCloud === 0 && status.behindCloud === 0,
+            detail: `ahead=${status.aheadOfCloud}, behind=${status.behindCloud}`
+        });
+        if (status.aheadOfCloud > 0) {
+            recommendations.push('Run `sacred backup` to send local captures to cloud.');
+        }
+        if (status.behindCloud > 0) {
+            recommendations.push('Run `sacred latest` to bring cloud captures into this folder.');
+        }
+        if (status.hasConflicts) {
+            recommendations.push('Run `sacred untangle` or resolve the tangled timeline before continuing.');
+        }
+    }
+
+    const codexSkill = path.join(os.homedir(), '.codex/skills/sacred-timeline/SKILL.md');
+    checks.push({
+        name: 'codex-skill',
+        ok: fs.existsSync(codexSkill),
+        detail: fs.existsSync(codexSkill) ? codexSkill : 'Codex skill not installed'
+    });
+    if (!fs.existsSync(codexSkill)) {
+        recommendations.push('Re-run the installer to add the Codex skill: `curl -fsSL https://raw.githubusercontent.com/suhitanantula/sacred-timeline/main/install.sh | bash`');
+    }
+
+    const claudeSkill = path.join(os.homedir(), '.claude/skills/sacred-timeline/SKILL.md');
+    checks.push({
+        name: 'claude-skill',
+        ok: fs.existsSync(claudeSkill),
+        detail: fs.existsSync(claudeSkill) ? claudeSkill : 'Claude Code skill not installed'
+    });
+    if (!fs.existsSync(claudeSkill)) {
+        recommendations.push('Re-run the installer to add the Claude Code skill.');
+    }
+
+    return {
+        ok: checks.every(check => check.ok),
+        checks,
+        recommendations
+    };
 }
 
 async function main() {
     const args = process.argv.slice(2);
-    const command = args[0]?.toLowerCase();
-    const param = args.slice(1).join(' ');
+    const json = args.includes('--json') || args.includes('-j');
+    const commandArgs = args.filter(arg => arg !== '--json' && arg !== '-j');
+    const command = commandArgs[0]?.toLowerCase();
+    const param = commandArgs.slice(1).join(' ');
 
     if (!command || command === 'help' || command === '--help' || command === '-h') {
         console.log(getHelpText());
@@ -148,7 +312,15 @@ async function main() {
 
     // Check if this is a git repo for most commands
     const isRepo = await sacred.isRepository();
-    if (!isRepo && !['start', 'help'].includes(command)) {
+    if (!isRepo && !['start', 'help', 'doctor'].includes(command)) {
+        if (json) {
+            printJson({
+                success: false,
+                error: 'not_a_timeline',
+                message: 'Not a Sacred Timeline yet. Run `sacred start` to begin.'
+            });
+            process.exit(1);
+        }
         console.log(color.yellow('⚠ ') + 'Not a Sacred Timeline yet. Run ' + color.green('sacred start') + ' to begin.');
         process.exit(1);
     }
@@ -162,6 +334,10 @@ async function main() {
                     process.exit(1);
                 }
                 const result = await sacred.capture(param);
+                if (json) {
+                    printJson(result);
+                    break;
+                }
                 console.log(result.success
                     ? color.green('📸 ') + result.message
                     : color.yellow('○ ') + result.message);
@@ -169,8 +345,14 @@ async function main() {
             }
 
             case 'latest': {
-                console.log(color.dim('Getting the latest from cloud...'));
+                if (!json) {
+                    console.log(color.dim('Getting the latest from cloud...'));
+                }
                 const result = await sacred.update();
+                if (json) {
+                    printJson(result);
+                    break;
+                }
                 console.log(result.success
                     ? color.green('✓ ') + result.message
                     : color.yellow('○ ') + result.message);
@@ -178,8 +360,14 @@ async function main() {
             }
 
             case 'backup': {
-                console.log(color.dim('Backing up to cloud...'));
+                if (!json) {
+                    console.log(color.dim('Backing up to cloud...'));
+                }
                 const result = await sacred.backup();
+                if (json) {
+                    printJson(result);
+                    break;
+                }
                 console.log(result.success
                     ? color.green('☁ ') + result.message
                     : color.yellow('○ ') + result.message);
@@ -187,8 +375,14 @@ async function main() {
             }
 
             case 'backup-all': {
-                console.log(color.dim('Backing up all worktrees...\n'));
+                if (!json) {
+                    console.log(color.dim('Backing up all worktrees...\n'));
+                }
                 const result = await sacred.backupAll();
+                if (json) {
+                    printJson(result);
+                    break;
+                }
 
                 if (result.results.length === 0) {
                     // No worktrees, just show regular backup result
@@ -213,6 +407,10 @@ async function main() {
 
             case 'changes': {
                 const result = await sacred.changes();
+                if (json) {
+                    printJson(result);
+                    break;
+                }
                 if (!result.hasChanges) {
                     console.log(color.dim('No changes since last capture.'));
                 } else {
@@ -239,6 +437,10 @@ async function main() {
 
             case 'timeline': {
                 const entries = await sacred.timeline(30);
+                if (json) {
+                    printJson(entries);
+                    break;
+                }
                 if (entries.length === 0) {
                     console.log(color.dim('No captures yet. Create your first with: sacred capture "your message"'));
                 } else {
@@ -310,8 +512,14 @@ async function main() {
                     console.log(color.dim('Example: sacred narrate 30'));
                     process.exit(1);
                 }
-                console.log(color.dim(`Analyzing the last ${days} days...\n`));
+                if (!json) {
+                    console.log(color.dim(`Analyzing the last ${days} days...\n`));
+                }
                 const result = await sacred.narrate(days);
+                if (json) {
+                    printJson(result);
+                    break;
+                }
 
                 console.log(color.bold(`📖 Your Story — last ${days} day${days !== 1 ? 's' : ''}:\n`));
                 console.log(result.summary);
@@ -335,6 +543,10 @@ async function main() {
                     process.exit(1);
                 }
                 const result = await sacred.experiment(param);
+                if (json) {
+                    printJson(result);
+                    break;
+                }
                 console.log(result.success
                     ? color.green('🧪 ') + result.message
                     : color.red('✗ ') + result.message);
@@ -343,6 +555,10 @@ async function main() {
 
             case 'keep': {
                 const result = await sacred.keep();
+                if (json) {
+                    printJson(result);
+                    break;
+                }
                 console.log(result.success
                     ? color.green('✓ ') + result.message
                     : color.yellow('○ ') + result.message);
@@ -351,6 +567,10 @@ async function main() {
 
             case 'discard': {
                 const result = await sacred.discard();
+                if (json) {
+                    printJson(result);
+                    break;
+                }
                 console.log(result.success
                     ? color.green('🗑 ') + result.message
                     : color.yellow('○ ') + result.message);
@@ -364,6 +584,10 @@ async function main() {
                     process.exit(1);
                 }
                 const result = await sacred.restore(param);
+                if (json) {
+                    printJson(result);
+                    break;
+                }
                 console.log(result.success
                     ? color.green('⏪ ') + result.message
                     : color.red('✗ ') + result.message);
@@ -376,6 +600,10 @@ async function main() {
                     break;
                 }
                 const result = await sacred.start();
+                if (json) {
+                    printJson(result);
+                    break;
+                }
                 console.log(result.success
                     ? color.green('🚀 ') + result.message
                     : color.red('✗ ') + result.message);
@@ -389,6 +617,10 @@ async function main() {
                     process.exit(1);
                 }
                 const result = await sacred.connect(param);
+                if (json) {
+                    printJson(result);
+                    break;
+                }
                 console.log(result.success
                     ? color.green('🔗 ') + result.message
                     : color.red('✗ ') + result.message);
@@ -398,6 +630,10 @@ async function main() {
             case 'status': {
                 const status = await sacred.getStatusSummary();
                 const changes = await sacred.changes();
+                if (json) {
+                    printJson(await buildStatusPayload(sacred));
+                    break;
+                }
 
                 console.log(color.bold('\nSacred Timeline Status:\n'));
 
@@ -427,6 +663,28 @@ async function main() {
                     console.log(color.red('⚠ ') + 'Has conflicts - needs untangling');
                 }
                 console.log();
+                break;
+            }
+
+            case 'doctor': {
+                const result = await buildDoctorPayload(sacred, cwd);
+                if (json) {
+                    printJson(result);
+                    break;
+                }
+
+                console.log(color.bold('\nSacred Timeline Doctor:\n'));
+                for (const check of result.checks) {
+                    const icon = check.ok ? color.green('✓') : color.yellow('○');
+                    console.log(`${icon} ${check.name}: ${check.detail}`);
+                }
+
+                if (result.recommendations.length > 0) {
+                    console.log(color.bold('\nRecommended next steps:\n'));
+                    result.recommendations.forEach(item => console.log(`  ${color.yellow('→')} ${item}`));
+                } else {
+                    console.log(color.green('\n✓ Sacred Timeline is ready.\n'));
+                }
                 break;
             }
 

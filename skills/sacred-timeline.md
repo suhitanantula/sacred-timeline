@@ -35,7 +35,7 @@ Then tell the user: "Installed Sacred Timeline. You can now use `sacred` command
 **If `VERSION` and `LATEST` are both known and differ:** Tell the user:
 > "Sacred Timeline v{VERSION} is installed. v{LATEST} is available. Run `npm install -g @suhit/sacred-timeline` to upgrade."
 
-**If in a git repo (`REPO` is not `none`):** Run `sacred status` then **output the result as a formatted chat message** (not just inside the tool block — the user cannot see collapsed tool output). Format it like:
+**If in a git repo (`REPO` is not `none`):** Run `sacred doctor --json` first so you understand setup, cloud sync, and skill state. Then run `sacred status` and **output the result as a formatted chat message** (not just inside the tool block — the user cannot see collapsed tool output). Format it like:
 
 > **Sacred Timeline** · `repo-name` · `branch`
 > ● On main timeline  ✓ No uncommitted changes  ☁ In sync with cloud
@@ -57,6 +57,7 @@ sacred backup                        ✓
 sacred latest                        ✓
 sacred connect <github-url>          ✓  (not sacred remote)
 sacred status                        ✓
+sacred doctor                        ✓
 sacred timeline                      ✓
 sacred narrate [days]                ✓
 ```

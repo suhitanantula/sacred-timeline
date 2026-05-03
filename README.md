@@ -107,6 +107,16 @@ Try something risky → sacred experiment "new-approach"
 Done for the day → sacred backup
 ```
 
+For agent integrations and automation, Sacred Timeline also returns clean structured output:
+
+```bash
+sacred doctor --json
+sacred status --json
+sacred changes --json
+```
+
+`sacred doctor` checks the local setup, cloud connection, sync state, and installed Claude/Codex skills so an agent can tell a non-developer exactly what is ready and what needs attention.
+
 **The skill is the upgrade.** If you use Claude Code or Codex, the `/sacred-timeline` skill makes your agent proactive — it checks your status at session start, suggests captures at natural milestones, and wraps up with a plain-English story of what was built. The curl install adds it automatically.
 
 Type `/sacred-timeline` at the start of a Claude Code session and Claude will:
@@ -114,6 +124,8 @@ Type `/sacred-timeline` at the start of a Claude Code session and Claude will:
 - Speak in sacred language throughout
 - Suggest captures without being asked
 - Wrap up with a plain-English story of what was built
+
+**The MCP server is the agent-native layer.** Codex and other MCP-aware agents can use `sacred-mcp` to call Sacred Timeline as tools instead of parsing terminal text. This package ships a `.codex-plugin/plugin.json` manifest and `.mcp.json` configuration so the plugin can expose status, changes, timeline, narrate, capture, latest, backup, experiment, keep, discard, restore, and doctor tools.
 
 ---
 
@@ -141,6 +153,10 @@ Type `/sacred-timeline` at the start of a Claude Code session and Claude will:
 2. Work (or build with AI)
 3. `sacred capture "milestone description"` at natural stopping points
 4. `sacred backup` when done
+
+### Agent setup check:
+1. `sacred doctor` — see whether the local timeline, cloud backup, and agent skills are ready
+2. `sacred doctor --json` — give coding agents a structured setup report
 
 ### Trying something risky:
 1. `sacred experiment "name-it"`
